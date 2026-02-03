@@ -29,112 +29,42 @@
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
   
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
-  
-  --color-sidebar: hsl(var(--sidebar));
-  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
-  --color-sidebar-primary: hsl(var(--sidebar-primary));
-  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
-  --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
-  --color-sidebar-border: hsl(var(--sidebar-border));
-  --color-sidebar-ring: hsl(var(--sidebar-ring));
-
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Playfair Display', serif;
   
-  --radius: 0.25rem;
+  --radius: 0rem;
 }
 
-/* PREMIUM CORPORATE THEME */
 :root {
-  /* Clean White Background */
-  --background: 0 0% 100%;
-  --foreground: 215 25% 27%; /* Deep Navy Text */
+  /* Refined Premium Palette: Deep Emerald & Gold */
+  --background: 160 10% 99%;
+  --foreground: 160 50% 10%;
 
-  /* Deep Navy Primary - Trust & Stability */
-  --primary: 215 32% 17%;
-  --primary-foreground: 0 0% 100%;
+  --primary: 165 45% 15%; /* Deep Emerald */
+  --primary-foreground: 160 10% 98%;
 
-  /* Soft Grey Secondary */
-  --secondary: 210 20% 96%;
-  --secondary-foreground: 215 25% 27%;
+  --secondary: 165 20% 94%;
+  --secondary-foreground: 165 45% 15%;
 
-  /* Gold/Bronze Accent - Premium Quality */
-  --accent: 35 30% 50%;
-  --accent-foreground: 0 0% 100%;
+  --accent: 42 45% 55%; /* Rich Gold */
+  --accent-foreground: 165 45% 10%;
 
-  /* Clean Surfaces */
   --card: 0 0% 100%;
-  --card-foreground: 215 25% 27%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 215 25% 27%;
+  --card-foreground: 165 45% 15%;
+  
+  --muted: 165 10% 94%;
+  --muted-foreground: 165 20% 40%;
 
-  --muted: 210 20% 96%;
-  --muted-foreground: 215 15% 50%;
+  --border: 165 20% 88%;
+  --input: 165 20% 88%;
+  --ring: 165 45% 15%;
 
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 98%;
-
-  --border: 214 10% 90%;
-  --input: 214 10% 90%;
-  --ring: 215 32% 17%;
-
-  --radius: 0rem; /* Sharp edges for corporate feel */
-
-  /* Charts */
-  --chart-1: 215 32% 17%;
-  --chart-2: 35 30% 50%;
-  --chart-3: 142 76% 36%;
-  --chart-4: 0 84% 60%;
-  --chart-5: 280 65% 60%;
-
-  /* Sidebar */
-  --sidebar: 0 0% 98%;
-  --sidebar-foreground: 215 25% 27%;
-  --sidebar-primary: 215 32% 17%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 210 20% 96%;
-  --sidebar-accent-foreground: 215 25% 27%;
-  --sidebar-border: 220 13% 91%;
-  --sidebar-ring: 215 32% 17%;
-}
-
-.dark {
-  /* Dark mode mappings (if needed, though brief asks for Light Theme) */
-  --background: 215 25% 10%;
-  --foreground: 0 0% 98%;
-  --card: 215 25% 12%;
-  --card-foreground: 0 0% 98%;
-  --popover: 215 25% 12%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 215 25% 10%;
-  --secondary: 215 25% 15%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 215 25% 15%;
-  --muted-foreground: 215 15% 65%;
-  --accent: 35 30% 50%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62% 30%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 215 25% 20%;
-  --input: 215 25% 20%;
-  --ring: 212 26% 87%;
+  --chart-1: 165 45% 15%;
+  --chart-2: 42 45% 55%;
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply font-sans antialiased bg-background text-foreground;
-  }
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-serif;
-  }
+  * { @apply border-border; }
+  body { @apply font-sans antialiased bg-background text-foreground; }
+  h1, h2, h3, h4, h5, h6 { @apply font-serif tracking-tight; }
 }

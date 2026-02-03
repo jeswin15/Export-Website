@@ -6,6 +6,7 @@ import Products from "@/pages/products";
 import Admin from "@/pages/admin";
 import Licenses from "@/pages/licenses";
 import Contact from "@/pages/contact";
+import Quote from "@/pages/quote";
 import NotFound from "@/pages/not-found";
 import { Switch, Route } from "wouter";
 import { Toaster } from "@/components/ui/toaster";
@@ -22,6 +23,7 @@ function App() {
           <Route path="/admin" component={Admin} />
           <Route path="/licenses" component={Licenses} />
           <Route path="/contact" component={Contact} />
+          <Route path="/quote" component={Quote} />
           <Route component={NotFound} />
         </Switch>
       </main>

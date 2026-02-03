@@ -70,7 +70,7 @@ export default function Navbar() {
         </div>
 
         <div className="hidden md:flex">
-          <Link href="/contact">
+          <Link href="/quote">
             <Button variant="default" size="sm" className="bg-primary text-white hover:bg-primary/90">
               Get a Quote
             </Button>
@@ -119,7 +119,7 @@ export default function Navbar() {
                     </a>
                   </Link>
                 ))}
-                <Link href="/contact">
+                <Link href="/quote">
                   <Button className="w-full mt-4" onClick={() => setIsOpen(false)}>
                     Get a Quote
                   </Button>
