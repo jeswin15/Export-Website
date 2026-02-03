@@ -2,8 +2,14 @@ import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Globe } from "lucide-react";
+import { Menu, MoreVertical, Lock } from "lucide-react";
 import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Navbar() {
   const [location] = useLocation();
@@ -21,16 +27,16 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/">
-          <a className="flex items-center gap-2 transition-opacity hover:opacity-80">
-            <Globe className="h-6 w-6 text-primary" />
-            <span className="font-serif text-2xl font-bold tracking-tight text-primary">
-              GlobalExport
+          <a className="flex items-center gap-3 transition-opacity hover:opacity-80">
+            <img src="/images/logo.png" alt="Goodwill Global Exports" className="h-10 w-auto" />
+            <span className="font-serif text-xl font-bold tracking-tight text-primary hidden sm:inline">
+              Goodwill Global
             </span>
           </a>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex md:gap-8">
+        <div className="hidden md:flex md:gap-8 items-center">
           {navItems.map((item) => (
             <Link key={item.path} href={item.path}>
               <a
@@ -45,6 +51,22 @@ export default function Navbar() {
               </a>
             </Link>
           ))}
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="ml-2">
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <Link href="/admin">
+                <DropdownMenuItem className="cursor-pointer">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Admin Portal
+                </DropdownMenuItem>
+              </Link>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <div className="hidden md:flex">
@@ -56,38 +78,56 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Navigation */}
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
-          <SheetTrigger asChild className="md:hidden">
-            <Button variant="ghost" size="icon">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="right">
-            <div className="flex flex-col gap-6 mt-10">
-              {navItems.map((item) => (
-                <Link key={item.path} href={item.path}>
-                  <a
-                    onClick={() => setIsOpen(false)}
-                    className={cn(
-                      "text-lg font-medium transition-colors hover:text-primary",
-                      location === item.path
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {item.name}
-                  </a>
-                </Link>
-              ))}
-              <Link href="/contact">
-                <Button className="w-full mt-4" onClick={() => setIsOpen(false)}>
-                  Get a Quote
-                </Button>
+        <div className="flex items-center gap-2 md:hidden">
+           <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <Link href="/admin">
+                <DropdownMenuItem>
+                  <Lock className="mr-2 h-4 w-4" />
+                  Admin
+                </DropdownMenuItem>
               </Link>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <div className="flex flex-col gap-6 mt-10">
+                {navItems.map((item) => (
+                  <Link key={item.path} href={item.path}>
+                    <a
+                      onClick={() => setIsOpen(false)}
+                      className={cn(
+                        "text-lg font-medium transition-colors hover:text-primary",
+                        location === item.path
+                          ? "text-primary"
+                          : "text-muted-foreground"
+                      )}
+                    >
+                      {item.name}
+                    </a>
+                  </Link>
+                ))}
+                <Link href="/contact">
+                  <Button className="w-full mt-4" onClick={() => setIsOpen(false)}>
+                    Get a Quote
+                  </Button>
+                </Link>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </nav>
   );

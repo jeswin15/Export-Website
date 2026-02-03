@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import Home from "@/pages/home";
 import About from "@/pages/about";
 import Products from "@/pages/products";
+import Admin from "@/pages/admin";
 import Licenses from "@/pages/licenses";
 import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
@@ -18,6 +19,7 @@ function App() {
           <Route path="/" component={Home} />
           <Route path="/about" component={About} />
           <Route path="/products" component={Products} />
+          <Route path="/admin" component={Admin} />
           <Route path="/licenses" component={Licenses} />
           <Route path="/contact" component={Contact} />
           <Route component={NotFound} />
