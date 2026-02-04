@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Trash2, LogOut } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Plus, Trash2, LogOut, Package, Newspaper, Image as ImageIcon, Type, FileText } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
@@ -17,13 +18,15 @@ export default function Admin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [blogs, setBlogs] = useState<any[]>([]);
   const { toast } = useToast();
   
-  const [newProduct, setNewProduct] = useState<Partial<Product>>({
-    name: "",
+  const [formData, setFormData] = useState({
+    title: "",
     description: "",
     category: "Regular",
-    image: "/images/product-spice.png"
+    image: "/images/product-spice.png",
+    type: "product" as "product" | "blog"
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -37,24 +40,36 @@ export default function Admin() {
     }
   };
 
-  const handleAddProduct = () => {
-    if (!newProduct.name || !newProduct.description) {
+  const handleAddItem = () => {
+    if (!formData.title || !formData.description) {
       toast({ title: "Error", description: "Please fill in all fields", variant: "destructive" });
       return;
     }
 
-    const product: Product = {
-      id: Date.now(),
-      name: newProduct.name!,
-      description: newProduct.description!,
-      category: newProduct.category as "Regular" | "Seasonal",
-      image: newProduct.image || "/images/product-spice.png"
-    };
+    if (formData.type === "product") {
+      const product: Product = {
+        id: Date.now(),
+        name: formData.title,
+        description: formData.description,
+        category: formData.category as "Regular" | "Seasonal",
+        image: formData.image
+      };
+      setProducts([product, ...products]);
+      toast({ title: "Success", description: "Product added to catalog" });
+    } else {
+      const blog = {
+        id: Date.now(),
+        title: formData.title,
+        content: formData.description,
+        image: formData.image,
+        date: new Date().toLocaleDateString()
+      };
+      setBlogs([blog, ...blogs]);
+      toast({ title: "Success", description: "Blog post published" });
+    }
 
-    setProducts([product, ...products]);
-    setNewProduct({ name: "", description: "", category: "Regular", image: "/images/product-spice.png" });
+    setFormData({ title: "", description: "", category: "Regular", image: "/images/product-spice.png", type: "product" });
     setIsDialogOpen(false);
-    toast({ title: "Success", description: "Product added to catalog" });
   };
 
   const handleDeleteProduct = (id: number) => {
@@ -65,21 +80,38 @@ export default function Admin() {
   if (!isAuthenticated) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center bg-secondary/20 px-4">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <h1 className="font-serif text-2xl font-bold text-primary text-center">Admin Login</h1>
+        <Card className="w-full max-w-md border-none shadow-2xl">
+          <CardHeader className="bg-primary text-white text-center rounded-t-lg">
+            <Lock className="h-12 w-12 mx-auto mb-4 text-accent" />
+            <h1 className="font-serif text-2xl font-bold">Admin Portal</h1>
+            <p className="text-primary-foreground/70 text-sm">Secure Access Required</p>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleLogin} className="space-y-4">
+          <CardContent className="pt-8">
+            <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} />
+                <Input 
+                  id="username" 
+                  value={username} 
+                  onChange={(e) => setUsername(e.target.value)} 
+                  className="bg-secondary/50"
+                  placeholder="Enter username"
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <Input 
+                  id="password" 
+                  type="password" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  className="bg-secondary/50"
+                  placeholder="Enter password"
+                />
               </div>
-              <Button type="submit" className="w-full">Login</Button>
+              <Button type="submit" className="w-full h-12 text-lg bg-primary hover:bg-primary/90 btn-hover-effect">
+                Enter Dashboard
+              </Button>
             </form>
           </CardContent>
         </Card>
@@ -90,70 +122,151 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background py-12">
       <div className="container px-4 md:px-6">
-        <div className="mb-12 flex flex-col items-center justify-between gap-6 md:flex-row">
+        <div className="mb-12 flex flex-col items-center justify-between gap-6 md:flex-row border-b pb-8">
           <div>
-            <h1 className="font-serif text-3xl font-bold text-primary md:text-4xl">Admin Management</h1>
-            <p className="mt-2 text-muted-foreground">Manage Goodwill Global Exports product catalog.</p>
+            <h1 className="font-serif text-3xl font-bold text-primary md:text-5xl">Content Management</h1>
+            <p className="mt-2 text-muted-foreground">Manage products and blogs for Goodwill Global Exports.</p>
           </div>
 
           <div className="flex items-center gap-4">
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="gap-2 bg-primary text-white">
-                  <Plus className="h-4 w-4" /> Add Product
+                <Button className="gap-2 bg-primary text-white btn-hover-effect h-12 px-6">
+                  <Plus className="h-4 w-4" /> Create New Content
                 </Button>
               </DialogTrigger>
-              <DialogContent>
-                <DialogHeader><DialogTitle>Add New Product</DialogTitle></DialogHeader>
-                <div className="grid gap-4 py-4">
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-serif">Add New Content</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-6 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="name">Name</Label>
-                    <Input id="name" value={newProduct.name} onChange={(e) => setNewProduct({...newProduct, name: e.target.value})} />
+                    <Label>Content Type</Label>
+                    <div className="flex gap-4">
+                      <Button 
+                        variant={formData.type === 'product' ? 'default' : 'outline'} 
+                        className="flex-1"
+                        onClick={() => setFormData({...formData, type: 'product'})}
+                      >
+                        <Package className="mr-2 h-4 w-4" /> Product
+                      </Button>
+                      <Button 
+                        variant={formData.type === 'blog' ? 'default' : 'outline'} 
+                        className="flex-1"
+                        onClick={() => setFormData({...formData, type: 'blog'})}
+                      >
+                        <Newspaper className="mr-2 h-4 w-4" /> Blog
+                      </Button>
+                    </div>
                   </div>
+                  
                   <div className="grid gap-2">
-                    <Label htmlFor="category">Category</Label>
-                    <Select value={newProduct.category} onValueChange={(val: any) => setNewProduct({...newProduct, category: val})}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Regular">Regular</SelectItem>
-                        <SelectItem value="Seasonal">Seasonal</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Label htmlFor="title" className="flex items-center gap-2">
+                      <Type className="h-4 w-4 text-accent" /> 
+                      {formData.type === 'product' ? 'Product Name' : 'Blog Title'} *
+                    </Label>
+                    <Input id="title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="Enter title..." />
                   </div>
+
+                  {formData.type === 'product' && (
+                    <div className="grid gap-2">
+                      <Label htmlFor="category">Category</Label>
+                      <Select value={formData.category} onValueChange={(val: any) => setFormData({...formData, category: val})}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Regular">Regular</SelectItem>
+                          <SelectItem value="Seasonal">Seasonal</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
                   <div className="grid gap-2">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea id="description" value={newProduct.description} onChange={(e) => setNewProduct({...newProduct, description: e.target.value})} />
+                    <Label htmlFor="image" className="flex items-center gap-2">
+                      <ImageIcon className="h-4 w-4 text-accent" /> Image URL
+                    </Label>
+                    <Input id="image" value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="description" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-accent" /> Description / Content *
+                    </Label>
+                    <Textarea 
+                      id="description" 
+                      value={formData.description} 
+                      onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                      className="min-h-[150px]"
+                      placeholder="Write detailed information here..."
+                    />
                   </div>
                 </div>
-                <Button onClick={handleAddProduct} className="w-full">Save Product</Button>
+                <Button onClick={handleAddItem} className="w-full h-12 bg-primary btn-hover-effect">
+                  Confirm & Publish
+                </Button>
               </DialogContent>
             </Dialog>
-            <Button variant="outline" onClick={() => setIsAuthenticated(false)}>
+            <Button variant="outline" className="h-12" onClick={() => setIsAuthenticated(false)}>
               <LogOut className="h-4 w-4 mr-2" /> Logout
             </Button>
           </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <motion.div key={product.id} layout>
-              <Card className="overflow-hidden">
-                <div className="aspect-video bg-muted">
-                  <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+        <Tabs defaultValue="products" className="w-full">
+          <TabsList className="mb-8 bg-secondary/50 p-1">
+            <TabsTrigger value="products" className="px-8"><Package className="mr-2 h-4 w-4" /> Products</TabsTrigger>
+            <TabsTrigger value="blogs" className="px-8"><Newspaper className="mr-2 h-4 w-4" /> Blogs</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="products">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {products.map((product) => (
+                <motion.div key={product.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <Card className="overflow-hidden group hover:shadow-xl transition-shadow">
+                    <div className="aspect-video bg-muted overflow-hidden">
+                      <img src={product.image} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+                    <CardHeader className="p-4">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-bold text-lg text-primary">{product.name}</h3>
+                        <Badge variant="secondary">{product.category}</Badge>
+                      </div>
+                    </CardHeader>
+                    <CardFooter className="p-4 pt-0">
+                      <Button variant="ghost" size="sm" className="text-destructive w-full hover:bg-destructive/10" onClick={() => handleDeleteProduct(product.id)}>
+                        <Trash2 className="mr-2 h-4 w-4" /> Remove Product
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="blogs">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {blogs.map((blog) => (
+                <Card key={blog.id} className="overflow-hidden">
+                  <div className="aspect-video bg-muted">
+                    <img src={blog.image} className="h-full w-full object-cover" />
+                  </div>
+                  <CardHeader className="p-4">
+                    <h3 className="font-bold text-lg">{blog.title}</h3>
+                    <p className="text-xs text-muted-foreground">{blog.date}</p>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0">
+                    <p className="text-sm line-clamp-3 text-muted-foreground">{blog.content}</p>
+                  </CardContent>
+                </Card>
+              ))}
+              {blogs.length === 0 && (
+                <div className="col-span-full py-20 text-center border-2 border-dashed rounded-lg bg-secondary/10">
+                  <p className="text-muted-foreground italic">No blog posts yet. Click 'Create New Content' to start writing.</p>
                 </div>
-                <CardHeader className="p-4">
-                  <h3 className="font-bold">{product.name}</h3>
-                  <Badge variant="outline">{product.category}</Badge>
-                </CardHeader>
-                <CardFooter className="p-4 pt-0">
-                  <Button variant="ghost" size="sm" className="text-destructive w-full" onClick={() => handleDeleteProduct(product.id)}>
-                    <Trash2 className="mr-2 h-4 w-4" /> Delete
-                  </Button>
-                </CardFooter>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );

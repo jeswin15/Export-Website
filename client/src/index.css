@@ -32,21 +32,20 @@
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Playfair Display', serif;
   
-  --radius: 0rem;
+  --radius: 0.5rem;
 }
 
 :root {
-  /* Refined Premium Palette: Deep Emerald & Gold */
   --background: 160 10% 99%;
   --foreground: 160 50% 10%;
 
-  --primary: 165 45% 15%; /* Deep Emerald */
+  --primary: 165 45% 15%; 
   --primary-foreground: 160 10% 98%;
 
   --secondary: 165 20% 94%;
   --secondary-foreground: 165 45% 15%;
 
-  --accent: 42 45% 55%; /* Rich Gold */
+  --accent: 42 45% 55%; 
   --accent-foreground: 165 45% 10%;
 
   --card: 0 0% 100%;
@@ -67,4 +66,27 @@
   * { @apply border-border; }
   body { @apply font-sans antialiased bg-background text-foreground; }
   h1, h2, h3, h4, h5, h6 { @apply font-serif tracking-tight; }
+}
+
+@layer utilities {
+  .btn-hover-effect {
+    @apply relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:scale-95;
+  }
+  
+  .btn-hover-effect::after {
+    content: '';
+    @apply absolute inset-0 bg-white/10 opacity-0 transition-opacity duration-300;
+  }
+  
+  .btn-hover-effect:hover::after {
+    @apply opacity-100;
+  }
+
+  .scroll-reveal {
+    @apply transition-all duration-700 opacity-0 translate-y-8;
+  }
+
+  .scroll-reveal.visible {
+    @apply opacity-100 translate-y-0;
+  }
 }

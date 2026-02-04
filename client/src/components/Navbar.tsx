@@ -27,10 +27,10 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/">
-          <a className="flex items-center gap-3 transition-opacity hover:opacity-80">
-            <img src="/images/logo.png" alt="Goodwill Global Exports" className="h-10 w-auto" />
-            <span className="font-serif text-xl font-bold tracking-tight text-primary hidden sm:inline">
-              Goodwill Global
+          <a className="flex items-center gap-3 transition-all hover:opacity-80 group">
+            <img src="/images/logo.png" alt="Goodwill Global Exports" className="h-10 w-auto transition-transform group-hover:scale-110" />
+            <span className="font-serif text-xl font-bold tracking-tight text-primary hidden sm:inline group-hover:text-accent transition-colors">
+              Goodwill Global Exports
             </span>
           </a>
         </Link>
@@ -41,9 +41,9 @@ export default function Navbar() {
             <Link key={item.path} href={item.path}>
               <a
                 className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
+                  "text-sm font-medium transition-all hover:text-accent relative py-1 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-accent after:transition-all hover:after:w-full",
                   location === item.path
-                    ? "text-primary font-semibold"
+                    ? "text-primary font-bold after:w-full"
                     : "text-muted-foreground"
                 )}
               >
@@ -54,13 +54,13 @@ export default function Navbar() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="ml-2">
+              <Button variant="ghost" size="icon" className="ml-2 hover:bg-accent/10 hover:text-accent transition-colors">
                 <MoreVertical className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <Link href="/admin">
-                <DropdownMenuItem className="cursor-pointer">
+                <DropdownMenuItem className="cursor-pointer hover:bg-accent/10 hover:text-accent">
                   <Lock className="mr-2 h-4 w-4" />
                   Admin Portal
                 </DropdownMenuItem>
@@ -71,7 +71,7 @@ export default function Navbar() {
 
         <div className="hidden md:flex">
           <Link href="/quote">
-            <Button variant="default" size="sm" className="bg-primary text-white hover:bg-primary/90">
+            <Button variant="default" size="sm" className="bg-primary text-white hover:bg-primary/90 btn-hover-effect">
               Get a Quote
             </Button>
           </Link>
@@ -81,13 +81,13 @@ export default function Navbar() {
         <div className="flex items-center gap-2 md:hidden">
            <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hover:text-accent">
                 <MoreVertical className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <Link href="/admin">
-                <DropdownMenuItem>
+                <DropdownMenuItem className="hover:text-accent">
                   <Lock className="mr-2 h-4 w-4" />
                   Admin
                 </DropdownMenuItem>
@@ -97,7 +97,7 @@ export default function Navbar() {
 
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hover:text-accent">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
@@ -109,9 +109,9 @@ export default function Navbar() {
                     <a
                       onClick={() => setIsOpen(false)}
                       className={cn(
-                        "text-lg font-medium transition-colors hover:text-primary",
+                        "text-lg font-medium transition-colors hover:text-accent",
                         location === item.path
-                          ? "text-primary"
+                          ? "text-primary font-bold"
                           : "text-muted-foreground"
                       )}
                     >
@@ -120,7 +120,7 @@ export default function Navbar() {
                   </Link>
                 ))}
                 <Link href="/quote">
-                  <Button className="w-full mt-4" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full mt-4 btn-hover-effect" onClick={() => setIsOpen(false)}>
                     Get a Quote
                   </Button>
                 </Link>
