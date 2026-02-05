@@ -8,13 +8,13 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <img src="/images/logo.png" alt="Goodwill Global Exports" className="h-8 w-auto" />
+              <img src="/images/logo.png" alt="GOODWILL GLOBAL EXPORTS" className="h-8 w-auto" />
               <span className="font-serif text-xl font-bold text-primary">
-                Goodwill Global
+                GOODWILL GLOBAL EXPORTS
               </span>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Premium B2B export solutions connecting international markets with quality raw food products from Goodwill Global Exports.
+              Premium B2B export solutions connecting international markets with quality raw food products from GOODWILL GLOBAL EXPORTS.
             </p>
           </div>
           
@@ -24,6 +24,7 @@ export default function Footer() {
               <li><Link href="/"><a className="hover:text-primary transition-colors">Home</a></Link></li>
               <li><Link href="/about"><a className="hover:text-primary transition-colors">About Us</a></Link></li>
               <li><Link href="/products"><a className="hover:text-primary transition-colors">Products</a></Link></li>
+              <li><Link href="/blog"><a className="hover:text-primary transition-colors">Blog</a></Link></li>
               <li><Link href="/licenses"><a className="hover:text-primary transition-colors">Licenses</a></Link></li>
             </ul>
           </div>
@@ -51,13 +52,13 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                <span>contact@goodwillglobal.com</span>
+                <span>jeswin1564@gmail.com</span>
               </li>
             </ul>
           </div>
         </div>
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 text-center text-xs text-muted-foreground md:flex-row md:text-left">
-          <p>&copy; {new Date().getFullYear()} Goodwill Global Exports Inc. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} GOODWILL GLOBAL EXPORTS Inc. All rights reserved.</p>
           <div className="flex gap-4">
             <a href="#" className="hover:text-primary">Privacy Policy</a>
             <a href="#" className="hover:text-primary">Terms of Service</a>

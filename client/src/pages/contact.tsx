@@ -26,14 +26,13 @@ export default function Contact() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // In a real app, this would call the backend API
-    console.log("Submitting form:", values);
+    console.log("Sending Inquiry to jeswin1564@gmail.com:", values);
     
     // Simulate API delay
     setTimeout(() => {
       toast({
         title: "Message Sent",
-        description: "We have received your inquiry and will get back to you shortly.",
+        description: "Your inquiry has been sent to GOODWILL GLOBAL EXPORTS. Our team will contact you at " + values.email,
       });
       form.reset();
     }, 1000);
@@ -43,8 +42,8 @@ export default function Contact() {
     <div className="min-h-screen py-16">
       <div className="container px-4 md:px-6">
         <div className="mb-16 text-center">
-          <h1 className="font-serif text-4xl font-bold text-primary">Contact Us</h1>
-          <p className="mt-4 text-muted-foreground">Get in touch for export inquiries and quotes.</p>
+          <h1 className="font-serif text-4xl font-bold text-primary uppercase tracking-tighter">Contact GOODWILL GLOBAL EXPORTS</h1>
+          <p className="mt-4 text-muted-foreground">Connect with our global trade headquarters.</p>
         </div>
 
         <div className="grid gap-12 lg:grid-cols-2">
@@ -52,8 +51,8 @@ export default function Contact() {
           <div className="space-y-8">
             <div className="space-y-6">
               <h2 className="font-serif text-2xl font-semibold text-primary">Get Connected</h2>
-              <p className="text-muted-foreground">
-                We are available Mon-Fri, 9am - 6pm EST. Reach out to us for product catalogs, pricing, and shipping information.
+              <p className="text-muted-foreground leading-relaxed">
+                Our export specialists are available for consultation. Reach out for technical specifications, bulk pricing, and custom logistics solutions.
               </p>
             </div>
 
@@ -61,7 +60,7 @@ export default function Contact() {
               <div className="flex items-start gap-4">
                 <MapPin className="mt-1 h-6 w-6 text-accent" />
                 <div>
-                  <h3 className="font-semibold text-primary">Headquarters</h3>
+                  <h3 className="font-semibold text-primary">Global Headquarters</h3>
                   <p className="text-muted-foreground">123 Trade Center, Business District<br />New York, NY 10001</p>
                 </div>
               </div>
@@ -69,7 +68,7 @@ export default function Contact() {
               <div className="flex items-start gap-4">
                 <Phone className="mt-1 h-6 w-6 text-accent" />
                 <div>
-                  <h3 className="font-semibold text-primary">Phone</h3>
+                  <h3 className="font-semibold text-primary">Direct Hotline</h3>
                   <p className="text-muted-foreground">+1 (555) 123-4567</p>
                 </div>
               </div>
@@ -77,15 +76,18 @@ export default function Contact() {
               <div className="flex items-start gap-4">
                 <Mail className="mt-1 h-6 w-6 text-accent" />
                 <div>
-                  <h3 className="font-semibold text-primary">Email</h3>
-                  <p className="text-muted-foreground">contact@globalexport.com</p>
+                  <h3 className="font-semibold text-primary">Official Email</h3>
+                  <p className="text-muted-foreground">jeswin1564@gmail.com</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="rounded-lg border bg-card p-8 shadow-sm">
+          <div className="rounded-lg border bg-card p-8 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+              <Mail className="h-32 w-32" />
+            </div>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
@@ -93,7 +95,7 @@ export default function Contact() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>Full Name / Business Title</FormLabel>
                       <FormControl>
                         <Input placeholder="Your Name" {...field} />
                       </FormControl>
@@ -106,7 +108,7 @@ export default function Contact() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Email</FormLabel>
+                      <FormLabel>Business Email Address</FormLabel>
                       <FormControl>
                         <Input placeholder="your.email@company.com" {...field} />
                       </FormControl>
@@ -119,10 +121,10 @@ export default function Contact() {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Message</FormLabel>
+                      <FormLabel>Inquiry Details</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Tell us about your requirements..." 
+                          placeholder="Please provide details about your export requirements..." 
                           className="min-h-[120px]"
                           {...field} 
                         />
@@ -131,8 +133,8 @@ export default function Contact() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full bg-primary text-white hover:bg-primary/90">
-                  Send Message
+                <Button type="submit" className="w-full bg-primary text-white hover:bg-primary/90 btn-hover-effect">
+                  Submit Inquiry to Exports Team
                 </Button>
               </form>
             </Form>

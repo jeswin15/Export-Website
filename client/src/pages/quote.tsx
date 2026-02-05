@@ -2,14 +2,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { FileText, Send, Building2, PackageCheck } from "lucide-react";
+import { FileText, Send, Building2, PackageCheck, BadgeCheck } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 const quoteFormSchema = z.object({
   companyName: z.string().min(2, "Company name is required"),
@@ -43,12 +44,12 @@ export default function Quote() {
   });
 
   function onSubmit(values: z.infer<typeof quoteFormSchema>) {
-    console.log("Quote Request:", values);
+    console.log("Sending Quote Request to jeswin1564@gmail.com:", values);
     
     // In mockup mode, we simulate the email sending
     toast({
       title: "Quote Request Submitted",
-      description: "Our export team will review your business needs and send a detailed quotation to " + values.email,
+      description: "Request for GOODWILL GLOBAL EXPORTS has been sent. We will respond to " + values.email + " shortly.",
     });
     
     form.reset();
@@ -63,9 +64,9 @@ export default function Quote() {
           className="mb-12 text-center"
         >
           <BadgeCheck className="mx-auto h-12 w-12 text-accent mb-4" />
-          <h1 className="font-serif text-4xl font-bold text-primary">Request a Formal Quotation</h1>
+          <h1 className="font-serif text-4xl font-bold text-primary uppercase tracking-tighter">GOODWILL GLOBAL EXPORTS Quotation</h1>
           <p className="mt-4 text-muted-foreground text-lg">
-            Provide your business requirements below, and our specialists will prepare a custom export proposal.
+            Connect with our global supply network. Request a formal B2B proposal today.
           </p>
         </motion.div>
 
@@ -76,8 +77,8 @@ export default function Quote() {
                 <FileText className="h-5 w-5 text-accent" />
               </div>
               <div>
-                <h2 className="text-xl font-bold font-serif">Business Requirements Form</h2>
-                <p className="text-primary-foreground/70 text-sm">All fields marked with * are required for processing.</p>
+                <h2 className="text-xl font-bold font-serif">Export Requirements Form</h2>
+                <p className="text-primary-foreground/70 text-sm">Official GOODWILL GLOBAL EXPORTS Inquiry Channel.</p>
               </div>
             </div>
             
@@ -88,7 +89,7 @@ export default function Quote() {
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 border-b pb-2">
                       <Building2 className="h-4 w-4 text-accent" />
-                      <h3 className="font-bold text-sm uppercase tracking-wider text-primary">Company Information</h3>
+                      <h3 className="font-bold text-sm uppercase tracking-wider text-primary">Corporate Information</h3>
                     </div>
                     
                     <div className="grid gap-6 md:grid-cols-2">
@@ -108,7 +109,7 @@ export default function Quote() {
                         name="contactPerson"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Contact Person *</FormLabel>
+                            <FormLabel>Authorized Representative *</FormLabel>
                             <FormControl><Input placeholder="John Doe" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
@@ -130,7 +131,7 @@ export default function Quote() {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Phone Number *</FormLabel>
+                            <FormLabel>Contact Number *</FormLabel>
                             <FormControl><Input placeholder="+1 234 567 890" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
@@ -143,7 +144,7 @@ export default function Quote() {
                   <div className="space-y-6">
                     <div className="flex items-center gap-2 border-b pb-2">
                       <PackageCheck className="h-4 w-4 text-accent" />
-                      <h3 className="font-bold text-sm uppercase tracking-wider text-primary">Export Requirements</h3>
+                      <h3 className="font-bold text-sm uppercase tracking-wider text-primary">Logistics & Supply</h3>
                     </div>
                     
                     <div className="grid gap-6 md:grid-cols-2">
@@ -152,7 +153,7 @@ export default function Quote() {
                         name="country"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Destination Country *</FormLabel>
+                            <FormLabel>Destination Port / Country *</FormLabel>
                             <FormControl><Input placeholder="e.g. United Kingdom" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
@@ -187,7 +188,7 @@ export default function Quote() {
                         name="estimatedQuantity"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Estimated Quantity (Tons) *</FormLabel>
+                            <FormLabel>Metric Tons Required *</FormLabel>
                             <FormControl><Input placeholder="e.g. 50" {...field} /></FormControl>
                             <FormMessage />
                           </FormItem>
@@ -198,7 +199,7 @@ export default function Quote() {
                         name="frequency"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Order Frequency *</FormLabel>
+                            <FormLabel>Shipment Frequency *</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger>
@@ -206,10 +207,10 @@ export default function Quote() {
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="One-time">One-time Order</SelectItem>
-                                <SelectItem value="Monthly">Monthly Contract</SelectItem>
+                                <SelectItem value="One-time">Spot Order</SelectItem>
+                                <SelectItem value="Monthly">Monthly Recurring</SelectItem>
                                 <SelectItem value="Quarterly">Quarterly Supply</SelectItem>
-                                <SelectItem value="Annual">Annual Framework</SelectItem>
+                                <SelectItem value="Annual">Annual Partnership</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -223,10 +224,10 @@ export default function Quote() {
                       name="additionalRequirements"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Specific Requirements / Custom Packaging</FormLabel>
+                          <FormLabel>Special Instructions / Certifications</FormLabel>
                           <FormControl>
                             <Textarea 
-                              placeholder="Please detail any specific quality certifications or custom packaging needs..." 
+                              placeholder="Detail any specific quality standards, private labeling, or custom packaging needs..." 
                               className="min-h-[100px]"
                               {...field} 
                             />
@@ -248,17 +249,17 @@ export default function Quote() {
                             onCheckedChange={field.onChange}
                           />
                         </FormControl>
-                        <div className="space-y-1 leading-none">
+                        <div className="space-y-1 leading-none text-xs">
                           <FormLabel>
-                            I confirm that the above information is accurate and I am authorized to request a quote on behalf of my company.
+                            By submitting this request, I authorize GOODWILL GLOBAL EXPORTS to process my data for the purpose of preparing a formal business quotation.
                           </FormLabel>
                         </div>
                       </FormItem>
                     )}
                   />
 
-                  <Button type="submit" className="w-full h-12 text-lg bg-primary hover:bg-primary/90">
-                    Submit Quote Request <Send className="ml-2 h-4 w-4" />
+                  <Button type="submit" className="w-full h-12 text-lg bg-primary hover:bg-primary/90 btn-hover-effect uppercase font-bold tracking-widest">
+                    Dispatch Proposal Request <Send className="ml-2 h-4 w-4" />
                   </Button>
                 </form>
               </Form>
@@ -269,6 +270,3 @@ export default function Quote() {
     </div>
   );
 }
-
-import { Card, CardContent } from "@/components/ui/card";
-import { BadgeCheck } from "lucide-react";

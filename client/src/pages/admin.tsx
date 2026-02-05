@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, LogOut, Package, Newspaper, Image as ImageIcon, Type, FileText, Lock } from "lucide-react";
+import { Plus, Trash2, LogOut, Package, Newspaper, Image as ImageIcon, Type, FileText, Lock, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
@@ -37,6 +37,16 @@ export default function Admin() {
       toast({ title: "Welcome back", description: "Successfully logged into Admin Portal" });
     } else {
       toast({ title: "Login Failed", description: "Invalid credentials", variant: "destructive" });
+    }
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // In mockup mode, we create a local object URL to simulate upload
+      const imageUrl = URL.createObjectURL(file);
+      setFormData({ ...formData, image: imageUrl });
+      toast({ title: "Image Selected", description: "Image is ready for publishing." });
     }
   };
 
@@ -88,7 +98,7 @@ export default function Admin() {
         <Card className="w-full max-w-md border-none shadow-2xl">
           <CardHeader className="bg-primary text-white text-center rounded-t-lg">
             <Lock className="h-12 w-12 mx-auto mb-4 text-accent" />
-            <h1 className="font-serif text-2xl font-bold">Admin Portal</h1>
+            <h1 className="font-serif text-2xl font-bold uppercase tracking-tight">GOODWILL GLOBAL EXPORTS</h1>
             <p className="text-primary-foreground/70 text-sm">Secure Access Required</p>
           </CardHeader>
           <CardContent className="pt-8">
@@ -129,8 +139,8 @@ export default function Admin() {
       <div className="container px-4 md:px-6">
         <div className="mb-12 flex flex-col items-center justify-between gap-6 md:flex-row border-b pb-8">
           <div>
-            <h1 className="font-serif text-3xl font-bold text-primary md:text-5xl">Content Management</h1>
-            <p className="mt-2 text-muted-foreground">Manage products and blogs for Goodwill Global Exports.</p>
+            <h1 className="font-serif text-3xl font-bold text-primary md:text-5xl uppercase tracking-tighter">GOODWILL GLOBAL EXPORTS</h1>
+            <p className="mt-2 text-muted-foreground">Global Content Management Dashboard</p>
           </div>
 
           <div className="flex items-center gap-4">
@@ -187,10 +197,23 @@ export default function Admin() {
                   )}
 
                   <div className="grid gap-2">
-                    <Label htmlFor="image" className="flex items-center gap-2">
-                      <ImageIcon className="h-4 w-4 text-accent" /> Image URL
+                    <Label className="flex items-center gap-2">
+                      <ImageIcon className="h-4 w-4 text-accent" /> Image Upload
                     </Label>
-                    <Input id="image" value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
+                    <div className="flex flex-col gap-4">
+                      <Input type="file" accept="image/*" onChange={handleImageUpload} className="cursor-pointer" />
+                      <div className="flex items-center gap-2">
+                        <div className="h-px flex-1 bg-border" />
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground">or image url</span>
+                        <div className="h-px flex-1 bg-border" />
+                      </div>
+                      <Input id="image" value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
+                    </div>
+                    {formData.image && (
+                      <div className="mt-2 aspect-video overflow-hidden rounded-md border">
+                        <img src={formData.image} alt="Preview" className="h-full w-full object-cover" />
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid gap-2">

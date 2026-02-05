@@ -29,9 +29,9 @@ export default function Navbar() {
       <div className="container flex h-20 items-center justify-between px-4 md:px-6">
         <Link href="/">
           <a className="flex items-center gap-3 transition-all hover:opacity-80 group">
-            <img src="/images/logo.png" alt="Goodwill Global Exports" className="h-10 w-auto transition-transform group-hover:scale-110" />
-            <span className="font-serif text-xl font-bold tracking-tight text-primary hidden sm:inline group-hover:text-accent transition-colors">
-              Goodwill Global Exports
+            <img src="/images/logo.png" alt="GOODWILL GLOBAL EXPORTS" className="h-10 w-auto transition-transform group-hover:scale-110" />
+            <span className="font-serif text-xl font-bold tracking-tight text-primary hidden sm:inline group-hover:text-accent transition-colors uppercase">
+              GOODWILL GLOBAL EXPORTS
             </span>
           </a>
         </Link>
