@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, LogOut, Package, Newspaper, Image as ImageIcon, Type, FileText } from "lucide-react";
+import { Plus, Trash2, LogOut, Package, Newspaper, Image as ImageIcon, Type, FileText, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 
@@ -75,6 +75,11 @@ export default function Admin() {
   const handleDeleteProduct = (id: number) => {
     setProducts(products.filter(p => p.id !== id));
     toast({ title: "Deleted", description: "Product removed" });
+  };
+
+  const handleDeleteBlog = (id: number) => {
+    setBlogs(blogs.filter(b => b.id !== id));
+    toast({ title: "Deleted", description: "Blog removed" });
   };
 
   if (!isAuthenticated) {
@@ -222,7 +227,7 @@ export default function Admin() {
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product) => (
                 <motion.div key={product.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <Card className="overflow-hidden group hover:shadow-xl transition-shadow">
+                  <Card className="overflow-hidden group hover:shadow-xl transition-shadow h-full flex flex-col">
                     <div className="aspect-video bg-muted overflow-hidden">
                       <img src={product.image} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
                     </div>
@@ -232,6 +237,9 @@ export default function Admin() {
                         <Badge variant="secondary">{product.category}</Badge>
                       </div>
                     </CardHeader>
+                    <CardContent className="p-4 pt-0 flex-grow">
+                      <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+                    </CardContent>
                     <CardFooter className="p-4 pt-0">
                       <Button variant="ghost" size="sm" className="text-destructive w-full hover:bg-destructive/10" onClick={() => handleDeleteProduct(product.id)}>
                         <Trash2 className="mr-2 h-4 w-4" /> Remove Product
@@ -246,18 +254,25 @@ export default function Admin() {
           <TabsContent value="blogs">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {blogs.map((blog) => (
-                <Card key={blog.id} className="overflow-hidden">
-                  <div className="aspect-video bg-muted">
-                    <img src={blog.image} className="h-full w-full object-cover" />
-                  </div>
-                  <CardHeader className="p-4">
-                    <h3 className="font-bold text-lg">{blog.title}</h3>
-                    <p className="text-xs text-muted-foreground">{blog.date}</p>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <p className="text-sm line-clamp-3 text-muted-foreground">{blog.content}</p>
-                  </CardContent>
-                </Card>
+                <motion.div key={blog.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <Card className="overflow-hidden group hover:shadow-xl transition-shadow h-full flex flex-col">
+                    <div className="aspect-video bg-muted overflow-hidden">
+                      <img src={blog.image} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+                    <CardHeader className="p-4">
+                      <h3 className="font-bold text-lg text-primary">{blog.title}</h3>
+                      <p className="text-xs text-muted-foreground">{blog.date}</p>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0 flex-grow">
+                      <p className="text-sm line-clamp-3 text-muted-foreground">{blog.content}</p>
+                    </CardContent>
+                    <CardFooter className="p-4 pt-0">
+                      <Button variant="ghost" size="sm" className="text-destructive w-full hover:bg-destructive/10" onClick={() => handleDeleteBlog(blog.id)}>
+                        <Trash2 className="mr-2 h-4 w-4" /> Remove Blog
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </motion.div>
               ))}
               {blogs.length === 0 && (
                 <div className="col-span-full py-20 text-center border-2 border-dashed rounded-lg bg-secondary/10">
