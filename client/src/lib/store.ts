@@ -1,7 +1,7 @@
 import { Product } from "./data";
 
-// Shared state for the mockup
-let products: Product[] = [
+// Initial data to fall back on if nothing in localStorage
+const DEFAULT_PRODUCTS: Product[] = [
   {
     id: 1,
     name: "Premium Saffron Threads",
@@ -46,7 +46,7 @@ let products: Product[] = [
   }
 ];
 
-let blogs: any[] = [
+const DEFAULT_BLOGS: any[] = [
   {
     id: 1,
     title: "The Future of Sustainable Spice Export",
@@ -67,6 +67,29 @@ let blogs: any[] = [
   }
 ];
 
+// Helper to load from localStorage
+const loadFromStorage = <T>(key: string, defaultValue: T): T => {
+  if (typeof window === 'undefined') return defaultValue;
+  const saved = localStorage.getItem(key);
+  try {
+    return saved ? JSON.parse(saved) : defaultValue;
+  } catch (e) {
+    console.error(`Error loading ${key} from storage:`, e);
+    return defaultValue;
+  }
+};
+
+// Helper to save to localStorage
+const saveToStorage = (key: string, data: any) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+};
+
+// Shared state for the mockup
+let products: Product[] = loadFromStorage('gge_products', DEFAULT_PRODUCTS);
+let blogs: any[] = loadFromStorage('gge_blogs', DEFAULT_BLOGS);
+
 type Listener = () => void;
 const listeners: Set<Listener> = new Set();
 
@@ -76,21 +99,25 @@ export const store = {
   
   addProduct: (product: Product) => {
     products = [product, ...products];
+    saveToStorage('gge_products', products);
     store.notify();
   },
   
   removeProduct: (id: number) => {
     products = products.filter(p => p.id !== id);
+    saveToStorage('gge_products', products);
     store.notify();
   },
   
   addBlog: (blog: any) => {
     blogs = [blog, ...blogs];
+    saveToStorage('gge_blogs', blogs);
     store.notify();
   },
   
   removeBlog: (id: number) => {
     blogs = blogs.filter(b => b.id !== id);
+    saveToStorage('gge_blogs', blogs);
     store.notify();
   },
   
