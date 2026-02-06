@@ -150,7 +150,7 @@ export default function Admin() {
                   <Plus className="h-4 w-4" /> Create New Content
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl">
+              <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="text-2xl font-serif">Add New Content</DialogTitle>
                 </DialogHeader>
@@ -198,10 +198,10 @@ export default function Admin() {
 
                   <div className="grid gap-2">
                     <Label className="flex items-center gap-2">
-                      <ImageIcon className="h-4 w-4 text-accent" /> Image Upload
+                      <ImageIcon className="h-4 w-4 text-accent" /> Image Upload (JPG, PNG, WEBP)
                     </Label>
                     <div className="flex flex-col gap-4">
-                      <Input type="file" accept="image/*" onChange={handleImageUpload} className="cursor-pointer" />
+                      <Input type="file" accept="image/png, image/jpeg, image/jpg, image/webp" onChange={handleImageUpload} className="cursor-pointer" />
                       <div className="flex items-center gap-2">
                         <div className="h-px flex-1 bg-border" />
                         <span className="text-[10px] uppercase font-bold text-muted-foreground">or image url</span>
@@ -210,7 +210,7 @@ export default function Admin() {
                       <Input id="image" value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
                     </div>
                     {formData.image && (
-                      <div className="mt-2 aspect-video overflow-hidden rounded-md border">
+                      <div className="mt-2 max-w-[200px] aspect-video overflow-hidden rounded-md border shadow-sm">
                         <img src={formData.image} alt="Preview" className="h-full w-full object-cover" />
                       </div>
                     )}

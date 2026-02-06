@@ -51,6 +51,9 @@
   --card: 0 0% 100%;
   --card-foreground: 165 45% 15%;
   
+  --popover: 0 0% 100%;
+  --popover-foreground: 165 45% 15%;
+  
   --muted: 165 10% 94%;
   --muted-foreground: 165 20% 40%;
 

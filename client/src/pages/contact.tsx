@@ -26,13 +26,13 @@ export default function Contact() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Sending Inquiry to jeswin1564@gmail.com:", values);
+    console.log("Submitting form:", values);
     
     // Simulate API delay
     setTimeout(() => {
       toast({
         title: "Message Sent",
-        description: "Your inquiry has been sent to GOODWILL GLOBAL EXPORTS. Our team will contact you at " + values.email,
+        description: "We have received your inquiry and will get back to you shortly.",
       });
       form.reset();
     }, 1000);
@@ -77,7 +77,7 @@ export default function Contact() {
                 <Mail className="mt-1 h-6 w-6 text-accent" />
                 <div>
                   <h3 className="font-semibold text-primary">Official Email</h3>
-                  <p className="text-muted-foreground">jeswin1564@gmail.com</p>
+                  <p className="text-muted-foreground">contact@goodwillglobal.com</p>
                 </div>
               </div>
             </div>

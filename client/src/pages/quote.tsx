@@ -44,12 +44,12 @@ export default function Quote() {
   });
 
   function onSubmit(values: z.infer<typeof quoteFormSchema>) {
-    console.log("Sending Quote Request to jeswin1564@gmail.com:", values);
+    console.log("Quote Request:", values);
     
     // In mockup mode, we simulate the email sending
     toast({
       title: "Quote Request Submitted",
-      description: "Request for GOODWILL GLOBAL EXPORTS has been sent. We will respond to " + values.email + " shortly.",
+      description: "Our export team will review your business needs and send a detailed quotation to " + values.email,
     });
     
     form.reset();
