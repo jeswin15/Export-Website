@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { initialProducts, Product } from "@/lib/data";
+import { useState, useEffect } from "react";
+import { Product } from "@/lib/data";
+import { store } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,16 +12,24 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Trash2, LogOut, Package, Newspaper, Image as ImageIcon, Type, FileText, Lock, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Admin() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [products, setProducts] = useState<Product[]>(initialProducts);
-  const [blogs, setBlogs] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>(store.getProducts());
+  const [blogs, setBlogs] = useState<any[]>(store.getBlogs());
   const { toast } = useToast();
   
+  useEffect(() => {
+    const unsubscribe = store.subscribe(() => {
+      setProducts(store.getProducts());
+      setBlogs(store.getBlogs());
+    });
+    return () => { unsubscribe(); };
+  }, []);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -43,7 +52,6 @@ export default function Admin() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // In mockup mode, we create a local object URL to simulate upload
       const imageUrl = URL.createObjectURL(file);
       setFormData({ ...formData, image: imageUrl });
       toast({ title: "Image Selected", description: "Image is ready for publishing." });
@@ -64,7 +72,7 @@ export default function Admin() {
         category: formData.category as "Regular" | "Seasonal",
         image: formData.image
       };
-      setProducts([product, ...products]);
+      store.addProduct(product);
       toast({ title: "Success", description: "Product added to catalog" });
     } else {
       const blog = {
@@ -74,7 +82,7 @@ export default function Admin() {
         image: formData.image,
         date: new Date().toLocaleDateString()
       };
-      setBlogs([blog, ...blogs]);
+      store.addBlog(blog);
       toast({ title: "Success", description: "Blog post published" });
     }
 
@@ -83,12 +91,12 @@ export default function Admin() {
   };
 
   const handleDeleteProduct = (id: number) => {
-    setProducts(products.filter(p => p.id !== id));
+    store.removeProduct(id);
     toast({ title: "Deleted", description: "Product removed" });
   };
 
   const handleDeleteBlog = (id: number) => {
-    setBlogs(blogs.filter(b => b.id !== id));
+    store.removeBlog(id);
     toast({ title: "Deleted", description: "Blog removed" });
   };
 
@@ -248,55 +256,71 @@ export default function Admin() {
           
           <TabsContent value="products">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {products.map((product) => (
-                <motion.div key={product.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <Card className="overflow-hidden group hover:shadow-xl transition-shadow h-full flex flex-col">
-                    <div className="aspect-video bg-muted overflow-hidden">
-                      <img src={product.image} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    </div>
-                    <CardHeader className="p-4">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-bold text-lg text-primary">{product.name}</h3>
-                        <Badge variant="secondary">{product.category}</Badge>
+              <AnimatePresence mode="popLayout">
+                {products.map((product) => (
+                  <motion.div 
+                    key={product.id} 
+                    layout 
+                    initial={{ opacity: 0, scale: 0.9 }} 
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                  >
+                    <Card className="overflow-hidden group hover:shadow-xl transition-shadow h-full flex flex-col">
+                      <div className="aspect-video bg-muted overflow-hidden">
+                        <img src={product.image} alt={product.name} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       </div>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0 flex-grow">
-                      <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
-                    </CardContent>
-                    <CardFooter className="p-4 pt-0">
-                      <Button variant="ghost" size="sm" className="text-destructive w-full hover:bg-destructive/10" onClick={() => handleDeleteProduct(product.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" /> Remove Product
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
+                      <CardHeader className="p-4">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-bold text-lg text-primary">{product.name}</h3>
+                          <Badge variant="secondary">{product.category}</Badge>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-0 flex-grow">
+                        <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
+                      </CardContent>
+                      <CardFooter className="p-4 pt-0">
+                        <Button variant="ghost" size="sm" className="text-destructive w-full hover:bg-destructive/10" onClick={() => handleDeleteProduct(product.id)}>
+                          <Trash2 className="mr-2 h-4 w-4" /> Remove Product
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           </TabsContent>
           
           <TabsContent value="blogs">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {blogs.map((blog) => (
-                <motion.div key={blog.id} layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  <Card className="overflow-hidden group hover:shadow-xl transition-shadow h-full flex flex-col">
-                    <div className="aspect-video bg-muted overflow-hidden">
-                      <img src={blog.image} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                    </div>
-                    <CardHeader className="p-4">
-                      <h3 className="font-bold text-lg text-primary">{blog.title}</h3>
-                      <p className="text-xs text-muted-foreground">{blog.date}</p>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0 flex-grow">
-                      <p className="text-sm line-clamp-3 text-muted-foreground">{blog.content}</p>
-                    </CardContent>
-                    <CardFooter className="p-4 pt-0">
-                      <Button variant="ghost" size="sm" className="text-destructive w-full hover:bg-destructive/10" onClick={() => handleDeleteBlog(blog.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" /> Remove Blog
-                      </Button>
-                    </CardFooter>
-                  </Card>
-                </motion.div>
-              ))}
+              <AnimatePresence mode="popLayout">
+                {blogs.map((blog) => (
+                  <motion.div 
+                    key={blog.id} 
+                    layout 
+                    initial={{ opacity: 0, scale: 0.9 }} 
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                  >
+                    <Card className="overflow-hidden group hover:shadow-xl transition-shadow h-full flex flex-col">
+                      <div className="aspect-video bg-muted overflow-hidden">
+                        <img src={blog.image} className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      </div>
+                      <CardHeader className="p-4">
+                        <h3 className="font-bold text-lg text-primary">{blog.title}</h3>
+                        <p className="text-xs text-muted-foreground">{blog.date}</p>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-0 flex-grow">
+                        <p className="text-sm line-clamp-3 text-muted-foreground">{blog.content}</p>
+                      </CardContent>
+                      <CardFooter className="p-4 pt-0">
+                        <Button variant="ghost" size="sm" className="text-destructive w-full hover:bg-destructive/10" onClick={() => handleDeleteBlog(blog.id)}>
+                          <Trash2 className="mr-2 h-4 w-4" /> Remove Blog
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
               {blogs.length === 0 && (
                 <div className="col-span-full py-20 text-center border-2 border-dashed rounded-lg bg-secondary/10">
                   <p className="text-muted-foreground italic">No blog posts yet. Click 'Create New Content' to start writing.</p>
