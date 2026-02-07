@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -42,25 +43,44 @@ export default function Quote() {
       agreedToTerms: false,
     },
   });
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  function onSubmit(values: z.infer<typeof quoteFormSchema>) {
-    console.log("Quote Request:", values);
-    
-    // In mockup mode, we simulate the email sending
-    toast({
-      title: "Quote Request Submitted",
-      description: "Our export team will review your business needs and send a detailed quotation to " + values.email,
-    });
-    
-    form.reset();
+  async function onSubmit(values: z.infer<typeof quoteFormSchema>) {
+    try {
+      const response = await fetch("/api/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) throw new Error("Failed to submit request");
+
+      toast({
+        title: "CONFIRMED: Proposal Request Sent Successfully",
+        description: "We have received your request. A confirmation email has been sent to " + values.email,
+        duration: 5000,
+        className: "bg-green-50 border-green-200"
+      });
+
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 3000);
+      form.reset();
+    } catch (error) {
+      toast({
+        title: "Submission Error",
+        description: "Could not send quote request. Please try again.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
     <div className="min-h-screen bg-secondary/20 py-16">
       <div className="container max-w-4xl px-4 md:px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className="mb-12 text-center"
         >
           <BadgeCheck className="mx-auto h-12 w-12 text-accent mb-4" />
@@ -70,7 +90,13 @@ export default function Quote() {
           </p>
         </motion.div>
 
-        <div className="grid gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2 }}
+          className="grid gap-8"
+        >
           <Card className="border-none shadow-xl bg-white overflow-hidden">
             <div className="bg-primary p-6 text-white flex items-center gap-4">
               <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center">
@@ -81,7 +107,7 @@ export default function Quote() {
                 <p className="text-primary-foreground/70 text-sm">Official GOODWILL GLOBAL EXPORTS Inquiry Channel.</p>
               </div>
             </div>
-            
+
             <CardContent className="p-8">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -91,7 +117,7 @@ export default function Quote() {
                       <Building2 className="h-4 w-4 text-accent" />
                       <h3 className="font-bold text-sm uppercase tracking-wider text-primary">Corporate Information</h3>
                     </div>
-                    
+
                     <div className="grid gap-6 md:grid-cols-2">
                       <FormField
                         control={form.control}
@@ -146,7 +172,7 @@ export default function Quote() {
                       <PackageCheck className="h-4 w-4 text-accent" />
                       <h3 className="font-bold text-sm uppercase tracking-wider text-primary">Logistics & Supply</h3>
                     </div>
-                    
+
                     <div className="grid gap-6 md:grid-cols-2">
                       <FormField
                         control={form.control}
@@ -218,7 +244,7 @@ export default function Quote() {
                         )}
                       />
                     </div>
-                    
+
                     <FormField
                       control={form.control}
                       name="additionalRequirements"
@@ -226,10 +252,10 @@ export default function Quote() {
                         <FormItem>
                           <FormLabel>Special Instructions / Certifications</FormLabel>
                           <FormControl>
-                            <Textarea 
-                              placeholder="Detail any specific quality standards, private labeling, or custom packaging needs..." 
+                            <Textarea
+                              placeholder="Detail any specific quality standards, private labeling, or custom packaging needs..."
                               className="min-h-[100px]"
-                              {...field} 
+                              {...field}
                             />
                           </FormControl>
                           <FormMessage />
@@ -258,14 +284,20 @@ export default function Quote() {
                     )}
                   />
 
-                  <Button type="submit" className="w-full h-12 text-lg bg-primary hover:bg-primary/90 btn-hover-effect uppercase font-bold tracking-widest">
-                    Dispatch Proposal Request <Send className="ml-2 h-4 w-4" />
+                  <Button
+                    type="submit"
+                    disabled={form.formState.isSubmitting}
+                    className="w-full h-12 text-lg bg-primary hover:bg-primary/90 btn-hover-effect uppercase font-bold tracking-widest disabled:opacity-70"
+                  >
+                    {form.formState.isSubmitting ? "Dispatching Request..." : (
+                      <>Dispatch Proposal Request <Send className="ml-2 h-4 w-4" /></>
+                    )}
                   </Button>
                 </form>
               </Form>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

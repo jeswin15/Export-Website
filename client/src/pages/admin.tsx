@@ -21,8 +21,10 @@ export default function Admin() {
   const [products, setProducts] = useState<Product[]>(store.getProducts());
   const [blogs, setBlogs] = useState<any[]>(store.getBlogs());
   const { toast } = useToast();
-  
+
   useEffect(() => {
+    store.fetchProducts();
+    store.fetchBlogs();
     const unsubscribe = store.subscribe(() => {
       setProducts(store.getProducts());
       setBlogs(store.getBlogs());
@@ -117,21 +119,21 @@ export default function Admin() {
             <form onSubmit={handleLogin} className="space-y-6">
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
-                <Input 
-                  id="username" 
-                  value={username} 
-                  onChange={(e) => setUsername(e.target.value)} 
+                <Input
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   className="bg-secondary/50"
                   placeholder="Enter username"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input 
-                  id="password" 
-                  type="password" 
-                  value={password} 
-                  onChange={(e) => setPassword(e.target.value)} 
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="bg-secondary/50"
                   placeholder="Enter password"
                 />
@@ -170,35 +172,35 @@ export default function Admin() {
                   <div className="grid gap-2">
                     <Label>Content Type</Label>
                     <div className="flex gap-4">
-                      <Button 
-                        variant={formData.type === 'product' ? 'default' : 'outline'} 
+                      <Button
+                        variant={formData.type === 'product' ? 'default' : 'outline'}
                         className="flex-1"
-                        onClick={() => setFormData({...formData, type: 'product'})}
+                        onClick={() => setFormData({ ...formData, type: 'product' })}
                       >
                         <Package className="mr-2 h-4 w-4" /> Product
                       </Button>
-                      <Button 
-                        variant={formData.type === 'blog' ? 'default' : 'outline'} 
+                      <Button
+                        variant={formData.type === 'blog' ? 'default' : 'outline'}
                         className="flex-1"
-                        onClick={() => setFormData({...formData, type: 'blog'})}
+                        onClick={() => setFormData({ ...formData, type: 'blog' })}
                       >
                         <Newspaper className="mr-2 h-4 w-4" /> Blog
                       </Button>
                     </div>
                   </div>
-                  
+
                   <div className="grid gap-2">
                     <Label htmlFor="title" className="flex items-center gap-2">
-                      <Type className="h-4 w-4 text-accent" /> 
+                      <Type className="h-4 w-4 text-accent" />
                       {formData.type === 'product' ? 'Product Name' : 'Blog Title'} *
                     </Label>
-                    <Input id="title" value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} placeholder="Enter title..." />
+                    <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="Enter title..." />
                   </div>
 
                   {formData.type === 'product' && (
                     <div className="grid gap-2">
                       <Label htmlFor="category">Category</Label>
-                      <Select value={formData.category} onValueChange={(val: any) => setFormData({...formData, category: val})}>
+                      <Select value={formData.category} onValueChange={(val: any) => setFormData({ ...formData, category: val })}>
                         <SelectTrigger><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="Regular">Regular</SelectItem>
@@ -219,7 +221,7 @@ export default function Admin() {
                         <span className="text-[10px] uppercase font-bold text-muted-foreground">or image url</span>
                         <div className="h-px flex-1 bg-border" />
                       </div>
-                      <Input id="image" value={formData.image} onChange={(e) => setFormData({...formData, image: e.target.value})} placeholder="https://..." />
+                      <Input id="image" value={formData.image} onChange={(e) => setFormData({ ...formData, image: e.target.value })} placeholder="https://..." />
                     </div>
                     {formData.image && (
                       <div className="mt-2 max-w-[200px] aspect-video overflow-hidden rounded-md border shadow-sm">
@@ -232,10 +234,10 @@ export default function Admin() {
                     <Label htmlFor="description" className="flex items-center gap-2">
                       <FileText className="h-4 w-4 text-accent" /> Description / Content *
                     </Label>
-                    <Textarea 
-                      id="description" 
-                      value={formData.description} 
-                      onChange={(e) => setFormData({...formData, description: e.target.value})} 
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                       className="min-h-[150px]"
                       placeholder="Write detailed information here..."
                     />
@@ -257,15 +259,15 @@ export default function Admin() {
             <TabsTrigger value="products" className="px-8"><Package className="mr-2 h-4 w-4" /> Products</TabsTrigger>
             <TabsTrigger value="blogs" className="px-8"><Newspaper className="mr-2 h-4 w-4" /> Blogs</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="products">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <AnimatePresence mode="popLayout">
                 {products.map((product) => (
-                  <motion.div 
-                    key={product.id} 
-                    layout 
-                    initial={{ opacity: 0, scale: 0.9 }} 
+                  <motion.div
+                    key={product.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                   >
@@ -293,15 +295,15 @@ export default function Admin() {
               </AnimatePresence>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="blogs">
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               <AnimatePresence mode="popLayout">
                 {blogs.map((blog) => (
-                  <motion.div 
-                    key={blog.id} 
-                    layout 
-                    initial={{ opacity: 0, scale: 0.9 }} 
+                  <motion.div
+                    key={blog.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                   >

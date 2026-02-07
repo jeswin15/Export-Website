@@ -34,9 +34,15 @@ function Router() {
   );
 }
 
+import SplashScreen from "@/components/SplashScreen";
+import { useState } from "react";
+
 function App() {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <div className="min-h-screen">
+      {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
       <Router />
       <Toaster />
     </div>

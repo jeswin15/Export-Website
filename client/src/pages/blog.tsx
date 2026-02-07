@@ -12,6 +12,7 @@ export default function Blog() {
   const [selectedBlog, setSelectedBlog] = useState<any>(null);
 
   useEffect(() => {
+    store.fetchBlogs();
     const unsubscribe = store.subscribe(() => {
       setBlogs(store.getBlogs());
     });
@@ -21,9 +22,10 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-background py-16">
       <div className="container px-4 md:px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           className="mb-16 text-center"
         >
           <h1 className="font-serif text-4xl font-bold text-primary md:text-5xl uppercase tracking-tighter">GOODWILL GLOBAL EXPORTS</h1>
@@ -38,7 +40,8 @@ export default function Blog() {
               <motion.div
                 key={blog.id}
                 initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -10 }}
@@ -47,10 +50,10 @@ export default function Blog() {
               >
                 <Card className="h-full overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-300 group">
                   <div className="aspect-video relative overflow-hidden">
-                    <img 
-                      src={blog.image} 
-                      alt={blog.title} 
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    <img
+                      src={blog.image}
+                      alt={blog.title}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute top-4 left-4">
                       <Badge className="bg-accent text-white border-none shadow-md">Industry News</Badge>
@@ -93,15 +96,15 @@ export default function Blog() {
           <div className="overflow-y-auto max-h-[90vh]">
             <div className="aspect-[21/9] w-full relative">
               {selectedBlog && (
-                <img 
-                  src={selectedBlog.image} 
-                  alt={selectedBlog.title} 
+                <img
+                  src={selectedBlog.image}
+                  alt={selectedBlog.title}
                   className="h-full w-full object-cover"
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-8">
                 <div className="text-white text-left">
-                   <div className="flex items-center gap-4 text-xs text-white/80 mb-3">
+                  <div className="flex items-center gap-4 text-xs text-white/80 mb-3">
                     <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {selectedBlog?.date}</span>
                     <span className="flex items-center gap-1"><User className="h-3 w-3" /> {selectedBlog?.author || "GOODWILL GLOBAL EXPORTS"}</span>
                   </div>
@@ -111,12 +114,12 @@ export default function Blog() {
                 </div>
               </div>
             </div>
-            
+
             <div className="p-8 md:p-12 prose prose-emerald max-w-none">
               <div className="text-muted-foreground text-lg leading-relaxed whitespace-pre-wrap">
                 {selectedBlog?.content || selectedBlog?.excerpt}
               </div>
-              
+
               <div className="mt-12 pt-8 border-t flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center text-white font-serif font-bold text-xl">

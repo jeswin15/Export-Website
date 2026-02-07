@@ -8,21 +8,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Package, Globe, ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useLocation } from "wouter";
 
 export default function Products() {
+  const [, setLocation] = useLocation();
   const [products, setProducts] = useState<Product[]>(store.getProducts());
   const [filter, setFilter] = useState<"All" | "Regular" | "Seasonal">("All");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
+    store.fetchProducts();
     const unsubscribe = store.subscribe(() => {
       setProducts(store.getProducts());
     });
     return () => { unsubscribe(); };
   }, []);
 
-  const filteredProducts = filter === "All" 
-    ? products 
+  const filteredProducts = filter === "All"
+    ? products
     : products.filter(p => p.category === filter);
 
   return (
@@ -57,7 +60,8 @@ export default function Products() {
               <motion.div
                 key={product.id}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 layout
                 onClick={() => setSelectedProduct(product)}
@@ -65,8 +69,8 @@ export default function Products() {
               >
                 <Card className="h-full overflow-hidden border-none shadow-lg hover:shadow-2xl transition-all duration-500 group">
                   <div className="aspect-[4/3] w-full overflow-hidden bg-muted relative">
-                    <img 
-                      src={product.image} 
+                    <img
+                      src={product.image}
                       alt={product.name}
                       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                     />
@@ -110,9 +114,9 @@ export default function Products() {
           <div className="flex flex-col md:flex-row h-full max-h-[90vh]">
             <div className="w-full md:w-1/2 bg-muted relative overflow-hidden min-h-[300px]">
               {selectedProduct && (
-                <img 
-                  src={selectedProduct.image} 
-                  alt={selectedProduct.name} 
+                <img
+                  src={selectedProduct.image}
+                  alt={selectedProduct.name}
                   className="h-full w-full object-cover"
                 />
               )}
@@ -120,7 +124,7 @@ export default function Products() {
                 <Badge className="bg-primary/90 text-white border-none px-4 py-1">Export Quality</Badge>
               </div>
             </div>
-            
+
             <div className="w-full md:w-1/2 p-8 overflow-y-auto bg-white">
               <DialogHeader className="mb-6 text-left">
                 <div className="flex items-center gap-2 mb-2 text-accent">
@@ -134,7 +138,7 @@ export default function Products() {
                   {selectedProduct?.category} Category
                 </Badge>
               </DialogHeader>
-              
+
               <div className="space-y-6">
                 <div>
                   <h4 className="font-bold text-sm uppercase text-muted-foreground mb-2 flex items-center gap-2">
@@ -156,7 +160,10 @@ export default function Products() {
                   </div>
                 </div>
 
-                <Button className="w-full h-12 bg-primary text-white hover:bg-primary/90 mt-8 btn-hover-effect uppercase tracking-widest font-bold">
+                <Button
+                  onClick={() => setLocation("/quote")}
+                  className="w-full h-12 bg-primary text-white hover:bg-primary/90 mt-8 btn-hover-effect uppercase tracking-widest font-bold"
+                >
                   Request Quote for this Product
                 </Button>
               </div>

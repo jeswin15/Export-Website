@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -7,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Mail, MapPin, Phone } from "lucide-react";
+import { motion } from "framer-motion";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -24,18 +26,34 @@ export default function Contact() {
       message: "",
     },
   });
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Submitting form:", values);
-    
-    // Simulate API delay
-    setTimeout(() => {
-      toast({
-        title: "Message Sent",
-        description: "We have received your inquiry and will get back to you shortly.",
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
       });
+
+      if (!response.ok) throw new Error("Failed to send message");
+
+      toast({
+        title: "Message Sent Successfully",
+        description: "We have received your inquiry. A confirmation email has been sent to " + values.email,
+        duration: 5000,
+        className: "bg-green-50 border-green-200"
+      });
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 3000);
       form.reset();
-    }, 1000);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again later.",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -48,7 +66,13 @@ export default function Contact() {
 
         <div className="grid gap-12 lg:grid-cols-2">
           {/* Contact Info */}
-          <div className="space-y-8">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="space-y-8"
+          >
             <div className="space-y-6">
               <h2 className="font-serif text-2xl font-semibold text-primary">Get Connected</h2>
               <p className="text-muted-foreground leading-relaxed">
@@ -81,10 +105,16 @@ export default function Contact() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Contact Form */}
-          <div className="rounded-lg border bg-card p-8 shadow-sm relative overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="rounded-lg border bg-card p-8 shadow-sm relative overflow-hidden"
+          >
             <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
               <Mail className="h-32 w-32" />
             </div>
@@ -123,22 +153,33 @@ export default function Contact() {
                     <FormItem>
                       <FormLabel>Inquiry Details</FormLabel>
                       <FormControl>
-                        <Textarea 
-                          placeholder="Please provide details about your export requirements..." 
+                        <Textarea
+                          placeholder="Please provide details about your export requirements..."
                           className="min-h-[120px]"
-                          {...field} 
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full bg-primary text-white hover:bg-primary/90 btn-hover-effect">
-                  Submit Inquiry to Exports Team
+                <Button
+                  type="submit"
+                  disabled={form.formState.isSubmitting || isSuccess}
+                  className={`w-full text-white btn-hover-effect disabled:opacity-100 transition-all duration-300 ${isSuccess ? "bg-green-600 hover:bg-green-600" : "bg-primary hover:bg-primary/90"
+                    }`}
+                >
+                  {form.formState.isSubmitting ? (
+                    "Sending Message..."
+                  ) : isSuccess ? (
+                    "Message Sent Successfully"
+                  ) : (
+                    "Submit Inquiry to Exports Team"
+                  )}
                 </Button>
               </form>
             </Form>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
