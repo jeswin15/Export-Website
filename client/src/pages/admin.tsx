@@ -52,9 +52,13 @@ export default function Admin() {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setFormData({ ...formData, image: imageUrl });
-      toast({ title: "Image Selected", description: "Image is ready for publishing." });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setFormData({ ...formData, image: base64String });
+        toast({ title: "Image Uploaded", description: "Image has been encoded for permanent storage." });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
