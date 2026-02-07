@@ -137,6 +137,26 @@ Pasted-Assets/
 ├── public/                 # Static assets (images, fonts, etc.)
 ├── .env                    # Environment variables (API keys, passwords)
 ├── package.json            # Project dependencies and scripts
-└── SETUP.md                # This setup guide
-```
+## 9. Deployment (GitHub)
+
+If the automatic push fails, you can manually push the code to your repository:
+
+1.  **Open Terminal** in the project folder.
+2.  **Run the following commands**:
+
+    ```bash
+    git remote set-url origin https://github.com/jeswin15/Pasted-Asserts.git
+    git push -u origin main
+    ```
+
+3.  **Authentication**:
+    *   If prompted, log in with your GitHub credentials.
+    *   If you use 2FA, you might need a Personal Access Token instead of your password.
+
+4.  **"Git is not recognized" Error?**:
+    *   If you see this error, it means you need to restart your terminal or VS Code to reload the settings.
+    *   **OR** try running this command instead:
+        ```powershell
+        & "C:\Program Files\Git\cmd\git.exe" push -u origin main
+        ```
 
