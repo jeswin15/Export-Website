@@ -11,7 +11,7 @@ const resend = new Resend(process.env.RESEND_API_KEY || 're_123456789'); // Dumm
 // For testing without a verified domain, we MUST use 'onboarding@resend.dev'
 // and send ONLY to the email address registered with the Resend account.
 const FROM_EMAIL = 'onboarding@resend.dev';
-const TO_EMAIL = process.env.EMAIL_USER || 'jeswinalbert15@gmail.com';
+const TO_EMAIL = 'jeswin1564@gmail.com'; // Verified Resend account email
 
 export interface ContactData {
   name: string;
