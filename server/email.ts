@@ -3,32 +3,15 @@ import * as nodemailer from "nodemailer";
 import dns from "dns";
 
 const transporterPromise = (async () => {
-  try {
-    const addresses = await dns.promises.resolve4('smtp.gmail.com');
-    const ip = addresses[0];
-    console.log(`Resolved Gmail SMTP IPv4: ${ip}`);
-    return nodemailer.createTransport({
-      host: ip,
-      port: 587,
-      secure: false, // Use STARTTLS
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      tls: {
-        servername: 'smtp.gmail.com' // Crucial: required for SSL validation when connecting via IP
-      }
-    });
-  } catch (e) {
-    console.error("Failed to resolve Gmail IPv4, falling back to hostname:", e);
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      }
-    });
-  }
+  // Reverting to standard 'gmail' service to let Nodemailer handle connection details.
+  // If this fails on Render, it confirms a specific environment block.
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    }
+  });
 })();
 
 // Helper to get the transporter
