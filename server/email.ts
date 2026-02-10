@@ -2,30 +2,52 @@
 import * as nodemailer from "nodemailer";
 import dns from "dns";
 
-const transporter = nodemailer.createTransport({
-  // service: "gmail", // Commented out to prevent overriding host connection
-  // HARDCODED IPv4 to bypass Render's IPv6 routing issues
-  // Resolved from smtp.gmail.com
-  host: '192.178.211.108', // Using the resolved IP from local test
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  // We no longer need the custom lookup if we are using the IP directly.
-  // This physically prevents any DNS resolution that could return an IPv6 address.
-} as nodemailer.TransportOptions);
+const transporterPromise = (async () => {
+  try {
+    const addresses = await dns.promises.resolve4('smtp.gmail.com');
+    const ip = addresses[0];
+    console.log(`Resolved Gmail SMTP IPv4: ${ip}`);
+    return nodemailer.createTransport({
+      host: ip,
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        servername: 'smtp.gmail.com' // Crucial: required for SSL validation when connecting via IP
+      }
+    });
+  } catch (e) {
+    console.error("Failed to resolve Gmail IPv4, falling back to hostname:", e);
+    return nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      }
+    });
+  }
+})();
+
+// Helper to get the transporter
+async function getTransporter() {
+  return await transporterPromise;
+}
 
 
 // Debug: Verify connection and credentials
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error("❌ Email Transport Error:", error);
-  } else {
-    console.log("✅ Email Server is ready");
-    console.log(`📧 Configured User: ${process.env.EMAIL_USER}`);
-  }
+// Debug: Verify connection and credentials
+transporterPromise.then(t => {
+  t.verify(function (error, success) {
+    if (error) {
+      console.error("❌ Email Transport Error:", error);
+    } else {
+      console.log("✅ Email Server is ready");
+      console.log(`📧 Configured User: ${process.env.EMAIL_USER}`);
+    }
+  });
 });
 
 export interface ContactData {
@@ -115,6 +137,7 @@ async function sendAutoReply(to: string, name: string, subject: string) {
   };
 
   try {
+    const transporter = await getTransporter();
     await transporter.sendMail(mailOptions);
   } catch (error) {
     console.error("Auto-reply failed:", error);
