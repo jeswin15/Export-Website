@@ -116,6 +116,7 @@ export async function sendQuoteEmail(data: QuoteData) {
     `,
   };
 
+  const transporter = await getTransporter();
   const info = await transporter.sendMail(mailOptions);
   console.log("✅ Quote Email sent. Message ID:", info.messageId);
   await sendAutoReply(data.email, data.contactPerson, "We successfully received your Quote Request");
