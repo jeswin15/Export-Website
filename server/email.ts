@@ -4,20 +4,17 @@ import dns from "dns";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
-  host: 'smtp.gmail.com',
+  // HARDCODED IPv4 to bypass Render's IPv6 routing issues
+  // Resolved from smtp.gmail.com
+  host: '192.178.211.108', // Using the resolved IP from local test
   port: 465,
   secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-  // Custom lookup function to force IPv4
-  // This circumvents connection issues in dual-stack environments like Render
-  lookup: (hostname: string, _options: any, callback: (err: NodeJS.ErrnoException | null, address: string, family: number) => void) => {
-    dns.lookup(hostname, { family: 4 }, (err, address, family) => {
-      callback(err, address, family);
-    });
-  }
+  // We no longer need the custom lookup if we are using the IP directly.
+  // This physically prevents any DNS resolution that could return an IPv6 address.
 } as nodemailer.TransportOptions);
 
 
