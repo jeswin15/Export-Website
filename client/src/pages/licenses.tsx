@@ -13,35 +13,35 @@ export default function Licenses() {
       issuer: "International Organization for Standardization",
       description: "Certified for Food Safety Management Systems ensuring safety throughout the food chain.",
       icon: ShieldCheck,
-      image: "/images/license-doc.png"
+      image: "/images/importexport.jpg"
     },
     {
       title: "Export House Status",
       issuer: "Directorate General of Foreign Trade",
       description: "Recognized as a Star Export House for consistent performance in international trade.",
       icon: Award,
-      image: "/images/license-doc.png"
+      image: "/images/importexport.jpg"
     },
     {
       title: "Organic Certification",
       issuer: "Control Union",
       description: "Certified organic exporter for spices and grains in compliance with EU and USDA standards.",
       icon: FileText,
-      image: "/images/license-doc.png"
+      image: "/images/membership.jpg"
     },
     {
       title: "FSSAI License",
       issuer: "Food Safety and Standards Authority",
       description: "Licensed under the Food Safety and Standards Act for handling food products.",
       icon: ShieldCheck,
-      image: "/images/license-doc.png"
+      image: "/images/registration.jpg"
     }
   ];
 
   return (
     <div className="min-h-screen bg-secondary/20 py-16">
       <div className="container px-4 md:px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -108,9 +108,9 @@ export default function Licenses() {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="relative w-full max-w-4xl bg-white shadow-2xl overflow-hidden"
             >
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="absolute top-4 right-4 z-10 hover:bg-accent/10 hover:text-accent"
                 onClick={() => setSelectedLicense(null)}
               >
@@ -135,9 +135,9 @@ export default function Licenses() {
                   </div>
                 </div>
                 <div className="bg-secondary/30 p-8 flex items-center justify-center min-h-[400px]">
-                  <img 
-                    src={selectedLicense.image} 
-                    alt={selectedLicense.title} 
+                  <img
+                    src={selectedLicense.image}
+                    alt={selectedLicense.title}
                     className="max-h-full w-auto shadow-2xl border-8 border-white transform -rotate-1"
                   />
                 </div>
