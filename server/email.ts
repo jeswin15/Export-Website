@@ -3,7 +3,7 @@ import * as nodemailer from "nodemailer";
 import dns from "dns";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  // service: "gmail", // Commented out to prevent overriding host connection
   // HARDCODED IPv4 to bypass Render's IPv6 routing issues
   // Resolved from smtp.gmail.com
   host: '192.178.211.108', // Using the resolved IP from local test
