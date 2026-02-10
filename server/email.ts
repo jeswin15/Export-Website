@@ -9,8 +9,8 @@ const transporterPromise = (async () => {
     console.log(`Resolved Gmail SMTP IPv4: ${ip}`);
     return nodemailer.createTransport({
       host: ip,
-      port: 465,
-      secure: true,
+      port: 587,
+      secure: false, // Use STARTTLS
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
