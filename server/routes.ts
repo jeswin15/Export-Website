@@ -75,6 +75,7 @@ export async function registerRoutes(
     });
 
     if (!parsed.success) {
+      console.error("Blog validation failed:", JSON.stringify(parsed.error, null, 2));
       return res.status(400).json(parsed.error);
     }
 

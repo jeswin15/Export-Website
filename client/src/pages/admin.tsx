@@ -64,12 +64,13 @@ export default function Admin() {
     }
   };
 
-  const handleAddItem = () => {
+  const handleAddItem = async () => {
     if (!formData.title || !formData.description) {
       toast({ title: "Error", description: "Please fill in all fields", variant: "destructive" });
       return;
     }
 
+    let success = false;
     if (formData.type === "product") {
       const product: Product = {
         id: Date.now(),
@@ -78,8 +79,10 @@ export default function Admin() {
         category: formData.category as "Regular" | "Seasonal",
         image: formData.image
       };
-      store.addProduct(product);
-      toast({ title: "Success", description: "Product added to catalog" });
+      success = await store.addProduct(product);
+      if (success) {
+        toast({ title: "Success", description: "Product added to catalog" });
+      }
     } else {
       const blog = {
         id: Date.now(),
@@ -88,12 +91,16 @@ export default function Admin() {
         image: formData.image,
         date: new Date().toLocaleDateString()
       };
-      store.addBlog(blog);
-      toast({ title: "Success", description: "Blog post published" });
+      success = await store.addBlog(blog);
+      if (success) {
+        toast({ title: "Success", description: "Blog post published" });
+      }
     }
 
-    setFormData({ title: "", description: "", category: "Regular", image: "/images/product-spice.png", type: "product" });
-    setIsDialogOpen(false);
+    if (success) {
+      setFormData({ title: "", description: "", category: "Regular", image: "/images/product-spice.png", type: "product" });
+      setIsDialogOpen(false);
+    }
   };
 
   const handleDeleteProduct = (id: number) => {

@@ -36,7 +36,7 @@ export const store = {
     }
   },
 
-  addProduct: async (product: Product) => {
+  addProduct: async (product: Product): Promise<boolean> => {
     try {
       const res = await fetch("/api/products", {
         method: "POST",
@@ -47,12 +47,16 @@ export const store = {
         const newProduct = await res.json();
         products = [newProduct, ...products];
         store.notify();
+        return true;
       } else {
-        throw new Error("Failed to add product");
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Failed to add product:", errorData);
+        throw new Error(errorData.message || "Failed to add product");
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error adding product:", e);
-      toast({ title: "Error", description: "Failed to add product", variant: "destructive" });
+      toast({ title: "Error", description: e.message || "Failed to add product", variant: "destructive" });
+      return false;
     }
   },
 
@@ -67,7 +71,7 @@ export const store = {
     }
   },
 
-  addBlog: async (blog: any) => {
+  addBlog: async (blog: any): Promise<boolean> => {
     try {
       const res = await fetch("/api/blogs", {
         method: "POST",
@@ -78,12 +82,16 @@ export const store = {
         const newBlog = await res.json();
         blogs = [newBlog, ...blogs];
         store.notify();
+        return true;
       } else {
-        throw new Error("Failed to add blog");
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Failed to add blog:", errorData);
+        throw new Error(errorData.message || "Failed to add blog");
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error adding blog:", e);
-      toast({ title: "Error", description: "Failed to add blog", variant: "destructive" });
+      toast({ title: "Error", description: e.message || "Failed to add blog", variant: "destructive" });
+      return false;
     }
   },
 
