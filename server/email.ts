@@ -2,10 +2,10 @@
 import { Resend } from 'resend';
 
 if (!process.env.RESEND_API_KEY) {
-  throw new Error("Missing RESEND_API_KEY environment variable");
+  console.warn("⚠️  WARNING: RESEND_API_KEY is missing. Email functionality will fail!");
 }
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY || 're_123456789'); // Dummy key to prevent startup crash if missing
 
 // Send from verified domain or onboarding address
 // For testing without a verified domain, we MUST use 'onboarding@resend.dev'
@@ -109,7 +109,9 @@ async function sendAutoReply(to: string, name: string, subject: string) {
   try {
     const { error } = await resend.emails.send({
       from: `Goodwill Global Exports <${FROM_EMAIL}>`,
-      to: [to],
+      // FOR VERIFICATION ONLY: Send auto-reply to company email because we are in sandbox mode
+      // and can only send to the verified address.
+      to: [TO_EMAIL], // Was: [to]
       subject: subject,
       html: `
             <h3>Hello ${name},</h3>
