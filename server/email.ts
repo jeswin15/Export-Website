@@ -84,6 +84,7 @@ export async function sendContactEmail(data: ContactData) {
     `,
   };
 
+  const transporter = await getTransporter();
   const info = await transporter.sendMail(mailOptions);
   console.log("✅ Contact Email sent. Message ID:", info.messageId);
   await sendAutoReply(data.email, data.name, "Thank you for contacting Goodwill Global Exports");
