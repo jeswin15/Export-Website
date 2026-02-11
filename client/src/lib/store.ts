@@ -4,6 +4,7 @@ import { toast } from "@/hooks/use-toast";
 // Shared state
 let products: Product[] = [];
 let blogs: any[] = [];
+let testimonials: any[] = [];
 
 type Listener = () => void;
 const listeners: Set<Listener> = new Set();
@@ -11,10 +12,11 @@ const listeners: Set<Listener> = new Set();
 export const store = {
   getProducts: () => [...products],
   getBlogs: () => [...blogs],
+  getTestimonials: () => [...testimonials],
 
   fetchProducts: async () => {
     try {
-      const res = await fetch("/api/products");
+      const res = await fetch(`/api/products?t=${Date.now()}`);
       if (res.ok) {
         products = await res.json();
         store.notify();
@@ -26,13 +28,25 @@ export const store = {
 
   fetchBlogs: async () => {
     try {
-      const res = await fetch("/api/blogs");
+      const res = await fetch(`/api/blogs?t=${Date.now()}`);
       if (res.ok) {
         blogs = await res.json();
         store.notify();
       }
     } catch (e) {
       console.error("Failed to fetch blogs", e);
+    }
+  },
+
+  fetchTestimonials: async () => {
+    try {
+      const res = await fetch(`/api/testimonials?t=${Date.now()}`);
+      if (res.ok) {
+        testimonials = await res.json();
+        store.notify();
+      }
+    } catch (e) {
+      console.error("Failed to fetch testimonials", e);
     }
   },
 
@@ -103,6 +117,41 @@ export const store = {
     } catch (e) {
       console.error("Error removing blog:", e);
       toast({ title: "Error", description: "Failed to remove blog", variant: "destructive" });
+    }
+  },
+
+  addTestimonial: async (testimonial: any): Promise<boolean> => {
+    try {
+      const res = await fetch("/api/testimonials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(testimonial)
+      });
+      if (res.ok) {
+        const newTestimonial = await res.json();
+        testimonials = [newTestimonial, ...testimonials];
+        store.notify();
+        return true;
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Failed to add testimonial:", errorData);
+        throw new Error(errorData.message || "Failed to add testimonial");
+      }
+    } catch (e: any) {
+      console.error("Error adding testimonial:", e);
+      toast({ title: "Error", description: e.message || "Failed to add testimonial", variant: "destructive" });
+      return false;
+    }
+  },
+
+  removeTestimonial: async (id: number) => {
+    try {
+      await fetch(`/api/testimonials/${id}`, { method: "DELETE" });
+      testimonials = testimonials.filter(t => t.id !== id);
+      store.notify();
+    } catch (e) {
+      console.error("Error removing testimonial:", e);
+      toast({ title: "Error", description: "Failed to remove testimonial", variant: "destructive" });
     }
   },
 

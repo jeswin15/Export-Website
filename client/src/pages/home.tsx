@@ -1,11 +1,92 @@
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, CheckCircle, Package, Truck, Globe } from "lucide-react";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { ArrowRight, CheckCircle, Package, Truck, Globe, Star, MapPin, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useRef, useState } from "react";
+import { store } from "@/lib/store";
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.3
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 100 } as const
+  }
+};
+
+function CountUp({ end, duration = 2 }: { end: number, duration?: number }) {
+  const [count, setCount] = useState(0);
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (inView) {
+      let startTime: number;
+      let animationFrame: number;
+
+      const animate = (timestamp: number) => {
+        if (!startTime) startTime = timestamp;
+        const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+
+        setCount(Math.floor(progress * end));
+
+        if (progress < 1) {
+          animationFrame = requestAnimationFrame(animate);
+        }
+      };
+
+      animationFrame = requestAnimationFrame(animate);
+      return () => cancelAnimationFrame(animationFrame);
+    }
+  }, [inView, end, duration]);
+
+  return <span ref={ref}>{count}</span>;
+}
 
 export default function Home() {
   const { scrollY } = useScroll();
   const yBg = useTransform(scrollY, [0, 500], [0, 150]); // Parallax effect for background
+  const [testimonials, setTestimonials] = useState<any[]>(store.getTestimonials());
+  const [products, setProducts] = useState<any[]>(store.getProducts());
+  const [] = useLocation();
+
+  useEffect(() => {
+    store.fetchTestimonials();
+    store.fetchProducts();
+    const unsubscribe = store.subscribe(() => {
+      setTestimonials(store.getTestimonials());
+      setProducts(store.getProducts());
+    });
+    return () => { unsubscribe(); };
+  }, []);
+
+  const featuredProducts = products.slice(0, 4).map(p => ({
+    id: p.id,
+    name: p.name,
+    image: p.image,
+    desc: p.description
+  }));
 
   return (
     <div className="w-full">
@@ -19,89 +100,187 @@ export default function Home() {
             y: yBg
           }}
         >
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" />
         </motion.div>
 
         {/* Hero Content */}
         <div className="relative z-10 flex h-full items-center justify-center text-center">
           <div className="container px-4 md:px-6">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="mx-auto max-w-3xl space-y-6"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="mx-auto max-w-4xl space-y-6"
             >
-              <motion.div
-                whileHover={{ scale: 1.05, y: -5, textShadow: "0 0 30px rgba(255,255,255,0.3)" }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                className="cursor-default"
-              >
-                <h1 className="font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-                  Connecting World Markets with <span className="text-accent italic">Premium Quality</span>
+              <motion.div variants={itemVariants} className="overflow-hidden">
+                <h1 className="font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl md:text-4xl lg:text-6xl">
+                  Connecting World Markets with <span className="text-secondary italic">Premium Quality</span>
                 </h1>
               </motion.div>
 
-              <p className="mx-auto max-w-2xl text-lg text-gray-200 md:text-xl">
-                Your trusted partner in international B2B food trade. We source and export the finest raw ingredients directly to your business.
-              </p>
+              <motion.div variants={itemVariants}>
+                <p className="mx-auto max-w-2xl text-lg text-gray-200 md:text-xl">
+                  Your trusted partner in international B2B food trade. We source and export the finest raw ingredients directly to your business.
+                </p>
+              </motion.div>
 
-              <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <motion.div variants={itemVariants} className="flex flex-col items-center justify-center gap-4 sm:flex-row pt-4">
                 <Link href="/products">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button size="lg" className="h-12 bg-accent px-8 text-base font-medium text-white hover:bg-accent/90">
+                    <Button size="lg" className="h-14 bg-secondary px-8 text-lg font-bold text-secondary-foreground hover:bg-secondary/90 shadow-lg shadow-secondary/20">
                       Explore Products
                     </Button>
                   </motion.div>
                 </Link>
                 <Link href="/contact">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button size="lg" variant="outline" className="h-12 border-white px-8 text-base font-medium text-white hover:bg-white hover:text-primary">
+                    <Button size="lg" variant="outline" className="h-14 border-white px-8 text-lg font-bold text-white hover:bg-white hover:text-primary backdrop-blur-sm bg-white/10">
                       Contact Us
                     </Button>
                   </motion.div>
                 </Link>
-              </div>
+              </motion.div>
             </motion.div>
+          </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white/50"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+        >
+          <div className="h-16 w-[1px] bg-gradient-to-b from-transparent via-white to-transparent mx-auto" />
+          <span className="text-xs uppercase tracking-widest mt-2 block">Scroll</span>
+        </motion.div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-16 bg-primary text-primary-foreground relative overflow-hidden">
+        <div className="container px-4 relative z-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {[
+              { label: "Years Experience", value: 15, suffix: "+" },
+              { label: "Countries Served", value: 50, suffix: "+" },
+              { label: "Products Shipped", value: 1000, suffix: " tons" },
+              { label: "Client Satisfaction", value: 100, suffix: "%" },
+            ].map((stat, idx) => (
+              <div key={idx} className="space-y-2">
+                <div className="text-4xl md:text-5xl font-bold text-secondary font-serif">
+                  <CountUp end={stat.value} />{stat.suffix}
+                </div>
+                <div className="text-sm md:text-base opacity-80 uppercase tracking-wider">{stat.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="bg-secondary/30 py-24 relative overflow-hidden">
-        {/* Decorative elements */}
-        <motion.div
-          className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl"
-          animate={{ x: [0, 50, 0], y: [0, 30, 0] }}
-          transition={{ repeat: Infinity, duration: 10, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-10 w-96 h-96 bg-accent/5 rounded-full blur-3xl"
-          animate={{ x: [0, -50, 0], y: [0, -30, 0] }}
-          transition={{ repeat: Infinity, duration: 15, ease: "easeInOut" }}
-        />
+      {/* Featured Products */}
+      <section className="py-24 bg-background">
+        <div className="container px-4">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+            <div className="space-y-4 max-w-2xl">
+              <span className="text-secondary font-bold tracking-wider uppercase text-sm">Our Collections</span>
+              <h2 className="text-3xl md:text-5xl font-serif font-bold text-primary">Featured Global Products</h2>
+              <p className="text-muted-foreground text-lg">Hand-picked selection of our finest exports, ready for international shipping.</p>
+            </div>
+            <Link href="/products">
+              <Button variant="outline" className="group">
+                View All Products <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </Link>
+          </div>
+
+          <Carousel className="w-full" opts={{ align: "start", loop: true }}>
+            <CarouselContent className="-ml-4">
+              {featuredProducts.map((product) => (
+                <CarouselItem key={product.id} className="pl-4 md:basis-1/2 lg:basis-1/3">
+                  <motion.div whileHover={{ y: -10 }} className="h-full">
+                    <Card className="h-full border-0 shadow-lg overflow-hidden group">
+                      <div className="relative aspect-[4/3] overflow-hidden">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-300" />
+                        <div className="absolute bottom-4 left-4 right-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                          <Link href="/products">
+                            <Button className="w-full bg-white text-primary hover:bg-secondary">View Details</Button>
+                          </Link>
+                        </div>
+                      </div>
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold mb-2 font-serif">{product.name}</h3>
+
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <div className="flex justify-end gap-2 mt-8">
+              <CarouselPrevious className="static translate-y-0" />
+              <CarouselNext className="static translate-y-0" />
+            </div>
+          </Carousel>
+        </div>
+      </section>
+
+      {/* Global Reach / Why Choose Us */}
+      <section className="bg-slate-50 py-24 relative overflow-hidden">
+        {/* World Map Background with Pulsing Dots */}
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg" alt="World Map" className="w-full h-full object-cover grayscale" />
+        </div>
+
+        {/* Animated Dots for Regions */}
+        {[
+          { top: '30%', left: '20%', label: 'North America' },
+          { top: '40%', left: '48%', label: 'Europe/GCC' },
+          { top: '50%', left: '70%', label: 'Asia' },
+          { top: '70%', left: '30%', label: 'South America' },
+        ].map((dot, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-3 h-3 bg-secondary rounded-full z-0"
+            style={{ top: dot.top, left: dot.left }}
+            initial={{ scale: 0, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            transition={{ delay: i * 0.5, duration: 0.5 }}
+          >
+            <motion.div
+              className="absolute inset-0 bg-secondary rounded-full"
+              animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+            />
+          </motion.div>
+        ))}
 
         <div className="container px-4 md:px-6 relative z-10">
-          <div className="mb-16 text-center">
-            <h2 className="font-serif text-3xl font-bold tracking-tight text-primary md:text-4xl">Why Choose Us</h2>
-            <p className="mt-4 text-muted-foreground">Excellence in every step of the supply chain</p>
+          <div className="text-center max-w-3xl mx-auto mb-16">
+            <span className="text-secondary font-bold tracking-wider uppercase text-sm">Why Choose Us</span>
+            <h2 className="font-serif text-3xl font-bold tracking-tight text-primary md:text-5xl mt-2">Excellence Across Borders</h2>
+            <p className="mt-4 text-muted-foreground text-lg">We handle the complexities of international trade so you can focus on your business.</p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-3">
             {[
               {
                 icon: Package,
-                title: "Premium Quality",
-                description: "Rigorous quality checks ensure only the best products reach your destination."
+                title: "Premium Quality Audit",
+                description: "Every shipment undergoes a rigorous 5-step quality check process before dispatch."
               },
               {
-                icon: Truck,
-                title: "Global Logistics",
-                description: "Efficient shipping networks to deliver products safely and on time, anywhere."
+                icon: MapPin,
+                title: "Global Logistics Network",
+                description: "Strategic partnerships with major shipping lines ensure priority handling."
               },
               {
-                icon: Globe,
-                title: "International Standards",
-                description: "Fully certified and compliant with global export regulations and standards."
+                icon: CheckCircle,
+                title: "Certified Compliance",
+                description: "Full documentation support including Phyto, Origin, and Quality certificates."
               }
             ].map((feature, idx) => (
               <motion.div
@@ -110,42 +289,123 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.2 }}
-                whileHover={{ y: -10 }}
-                className="group relative overflow-hidden bg-white p-8 shadow-sm transition-all hover:shadow-xl rounded-xl border border-transparent hover:border-primary/10"
+                whileHover={{ y: -5 }}
+                className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-secondary/20 transition-all duration-300 group"
               >
-                <motion.div
-                  className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300"
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ repeat: Infinity, duration: 3, delay: idx, ease: "easeInOut" }}
-                >
-                  <feature.icon className="h-6 w-6" />
-                </motion.div>
-                <h3 className="mb-2 text-xl font-bold text-primary">{feature.title}</h3>
-                <p className="text-muted-foreground group-hover:text-gray-600 transition-colors">{feature.description}</p>
+                <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/5 text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                  <feature.icon className="h-8 w-8" />
+                </div>
+                <h3 className="mb-3 text-2xl font-bold text-primary font-serif">{feature.title}</h3>
+                <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Testimonials */}
+      <section className="py-24 bg-primary text-white overflow-hidden">
+        <div className="container px-4">
+          <div className="text-center mb-16">
+            <h2 className="font-serif text-3xl md:text-4xl font-bold">Trusted by Global Partners</h2>
+          </div>
+
+          <Carousel className="w-full max-w-5xl mx-auto" opts={{ loop: true, align: "center" }}>
+            <CarouselContent>
+              {testimonials.length > 0 ? (
+                testimonials.map((t, i) => (
+                  <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      whileHover={{
+                        scale: 1.05,
+                        rotateY: 5,
+                        rotateX: -5,
+                        boxShadow: "0 20px 30px -10px rgba(0,0,0,0.3)"
+                      }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                      style={{ transformStyle: "preserve-3d", perspective: "1000px" }}
+                      className="bg-white/10 backdrop-blur-md p-8 rounded-2xl border border-white/10 h-full flex flex-col justify-between"
+                    >
+                      <div style={{ transform: "translateZ(20px)" }}>
+                        <div className="flex gap-1 mb-4 text-secondary">
+                          {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 fill-secondary" />)}
+                        </div>
+                        <p className="text-base italic mb-6 text-white/90">"{t.content}"</p>
+                      </div>
+                      <div className="flex items-center gap-4" style={{ transform: "translateZ(20px)" }}>
+                        <Avatar>
+                          <AvatarImage src={t.image} />
+                          <AvatarFallback>{t.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <div className="font-bold">{t.name}</div>
+                          <div className="text-sm text-white/70">{t.role}</div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </CarouselItem>
+                ))
+              ) : (
+                <div className="text-center w-full p-8 text-white/50">
+                  No testimonials yet. Check back soon!
+                </div>
+              )}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
+          </Carousel>
+        </div>
+      </section>
+
       {/* CTA Section */}
-      <section className="bg-primary py-24 text-white relative overflow-hidden">
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-secondary/10" />
         <div className="container px-4 md:px-6 relative z-10">
-          <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
-            <div className="space-y-4 text-center md:text-left">
-              <h2 className="font-serif text-3xl font-bold md:text-4xl">Ready to Start Trading?</h2>
-              <p className="text-primary-foreground/80">Get in touch with our export specialists for a custom quote.</p>
+          <div className="bg-white rounded-3xl p-8 md:p-16 shadow-2xl border border-secondary/20 flex flex-col md:flex-row items-center justify-between gap-12 text-center md:text-left">
+            <div className="space-y-6 max-w-2xl">
+              <h2 className="font-serif text-3xl font-bold md:text-5xl text-primary">Ready to expand your supply chain?</h2>
+              <p className="text-xl text-muted-foreground">Get in touch with our export specialists for a custom quote tailored to your market needs.</p>
+              <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                <Link href="/contact">
+                  <Button size="lg" className="bg-primary text-white hover:bg-primary/90 text-lg px-8 h-14">
+                    Request Quote <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/products">
+                  <Button size="lg" variant="outline" className="text-lg px-8 h-14">
+                    View Catalog
+                  </Button>
+                </Link>
+              </div>
             </div>
-            <Link href="/contact">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button size="lg" className="bg-white text-primary hover:bg-gray-100 font-bold px-8">
-                  Request Quote <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </motion.div>
-            </Link>
+            <div className="relative">
+              <div className="absolute inset-0 bg-secondary/20 blur-3xl rounded-full" />
+              <div className="relative bg-white p-4 rounded-2xl shadow-xl rotate-3">
+                <img
+                  src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=2670&auto=format&fit=crop"
+                  alt="Shipping"
+                  className="w-64 h-64 object-cover rounded-xl"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </section>
+      {/* Floating Contact Button */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 1 }}
+        className="fixed bottom-6 right-6 z-50"
+      >
+        <Link href="/contact">
+          <Button className="h-14 w-14 rounded-full bg-green-500 hover:bg-green-600 shadow-lg shadow-green-500/30 p-0 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+          </Button>
+        </Link>
+      </motion.div>
     </div>
   );
 }

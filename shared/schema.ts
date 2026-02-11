@@ -32,6 +32,15 @@ export const blogs = pgTable("blogs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const testimonials = pgTable("testimonials", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  role: text("role").notNull(),
+  content: text("content").notNull(),
+  imageUrl: text("image_url").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -50,11 +59,18 @@ export const insertBlogSchema = createInsertSchema(blogs).omit({
   createdAt: true,
 });
 
+export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Category = typeof categories.$inferSelect;
 export type Product = typeof products.$inferSelect;
 export type Blog = typeof blogs.$inferSelect;
+export type Testimonial = typeof testimonials.$inferSelect;
 export type InsertCategory = z.infer<typeof insertCategorySchema>;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 export type InsertBlog = z.infer<typeof insertBlogSchema>;
+export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;

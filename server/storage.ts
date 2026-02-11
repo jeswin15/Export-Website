@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Category, type InsertCategory, type Product, type InsertProduct, type Blog, type InsertBlog, users, categories, products, blogs } from "@shared/schema";
+import { type User, type InsertUser, type Category, type InsertCategory, type Product, type InsertProduct, type Blog, type InsertBlog, type Testimonial, type InsertTestimonial, users, categories, products, blogs, testimonials } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -21,6 +21,10 @@ export interface IStorage {
   getBlog(id: number): Promise<Blog | undefined>;
   createBlog(blog: InsertBlog): Promise<Blog>;
   deleteBlog(id: number): Promise<void>;
+
+  getTestimonials(): Promise<Testimonial[]>;
+  createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
+  deleteTestimonial(id: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -28,14 +32,16 @@ export class MemStorage implements IStorage {
   private categories: Map<number, Category>;
   private products: Map<number, Product>;
   private blogs: Map<number, Blog>;
-  private currentId: { users: number; categories: number; products: number; blogs: number };
+  private testimonials: Map<number, Testimonial>;
+  private currentId: { users: number; categories: number; products: number; blogs: number; testimonials: number };
 
   constructor() {
     this.users = new Map();
     this.categories = new Map();
     this.products = new Map();
     this.blogs = new Map();
-    this.currentId = { users: 1, categories: 1, products: 1, blogs: 1 };
+    this.testimonials = new Map();
+    this.currentId = { users: 1, categories: 1, products: 1, blogs: 1, testimonials: 1 };
   }
 
   async getUser(id: number): Promise<User | undefined> {
@@ -106,6 +112,21 @@ export class MemStorage implements IStorage {
 
   async deleteBlog(id: number): Promise<void> {
     this.blogs.delete(id);
+  }
+
+  async getTestimonials(): Promise<Testimonial[]> {
+    return Array.from(this.testimonials.values());
+  }
+
+  async createTestimonial(insertTestimonial: InsertTestimonial): Promise<Testimonial> {
+    const id = this.currentId.testimonials++;
+    const testimonial: Testimonial = { ...insertTestimonial, id: id, createdAt: new Date() };
+    this.testimonials.set(id, testimonial);
+    return testimonial;
+  }
+
+  async deleteTestimonial(id: number): Promise<void> {
+    this.testimonials.delete(id);
   }
 }
 
@@ -187,6 +208,22 @@ export class DatabaseStorage implements IStorage {
   async deleteBlog(id: number): Promise<void> {
     if (!db) throw new Error("Database not initialized");
     await db.delete(blogs).where(eq(blogs.id, id));
+  }
+
+  async getTestimonials(): Promise<Testimonial[]> {
+    if (!db) throw new Error("Database not initialized");
+    return await db.select().from(testimonials);
+  }
+
+  async createTestimonial(insertTestimonial: InsertTestimonial): Promise<Testimonial> {
+    if (!db) throw new Error("Database not initialized");
+    const [testimonial] = await db.insert(testimonials).values(insertTestimonial).returning();
+    return testimonial;
+  }
+
+  async deleteTestimonial(id: number): Promise<void> {
+    if (!db) throw new Error("Database not initialized");
+    await db.delete(testimonials).where(eq(testimonials.id, id));
   }
 }
 

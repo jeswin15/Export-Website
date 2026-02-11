@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, LogOut, Package, Newspaper, Image as ImageIcon, Type, FileText, Lock, Upload } from "lucide-react";
+import { Plus, Trash2, LogOut, Package, Newspaper, MessageSquare, Image as ImageIcon, Type, FileText, Lock, User, Briefcase } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -20,24 +20,28 @@ export default function Admin() {
   const [password, setPassword] = useState("");
   const [products, setProducts] = useState<Product[]>(store.getProducts());
   const [blogs, setBlogs] = useState<any[]>(store.getBlogs());
+  const [testimonials, setTestimonials] = useState<any[]>(store.getTestimonials());
   const { toast } = useToast();
 
   useEffect(() => {
     store.fetchProducts();
     store.fetchBlogs();
+    store.fetchTestimonials();
     const unsubscribe = store.subscribe(() => {
       setProducts(store.getProducts());
       setBlogs(store.getBlogs());
+      setTestimonials(store.getTestimonials());
     });
     return () => { unsubscribe(); };
   }, []);
 
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
+    title: "", // used for Name in testimonial
+    description: "", // used for Content in testimonial
     category: "Regular",
     image: "/images/product-spice.png",
-    type: "product" as "product" | "blog"
+    role: "", // only for testimonial
+    type: "product" as "product" | "blog" | "testimonial"
   });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -80,10 +84,8 @@ export default function Admin() {
         image: formData.image
       };
       success = await store.addProduct(product);
-      if (success) {
-        toast({ title: "Success", description: "Product added to catalog" });
-      }
-    } else {
+      if (success) toast({ title: "Success", description: "Product added to catalog" });
+    } else if (formData.type === "blog") {
       const blog = {
         id: Date.now(),
         title: formData.title,
@@ -92,13 +94,28 @@ export default function Admin() {
         date: new Date().toLocaleDateString()
       };
       success = await store.addBlog(blog);
-      if (success) {
-        toast({ title: "Success", description: "Blog post published" });
-      }
+      if (success) toast({ title: "Success", description: "Blog post published" });
+    } else if (formData.type === "testimonial") {
+      const testimonial = {
+        id: Date.now(),
+        name: formData.title,
+        role: formData.role || "Client",
+        content: formData.description,
+        image: formData.image
+      };
+      success = await store.addTestimonial(testimonial);
+      if (success) toast({ title: "Success", description: "Testimonial added" });
     }
 
     if (success) {
-      setFormData({ title: "", description: "", category: "Regular", image: "/images/product-spice.png", type: "product" });
+      setFormData({
+        title: "",
+        description: "",
+        category: "Regular",
+        image: "/images/product-spice.png",
+        role: "",
+        type: "product"
+      });
       setIsDialogOpen(false);
     }
   };
@@ -112,6 +129,11 @@ export default function Admin() {
     store.removeBlog(id);
     toast({ title: "Deleted", description: "Blog removed" });
   };
+
+  const handleDeleteTestimonial = (id: number) => {
+    store.removeTestimonial(id);
+    toast({ title: "Deleted", description: "Testimonial removed" });
+  }
 
   if (!isAuthenticated) {
     return (
@@ -193,16 +215,32 @@ export default function Admin() {
                       >
                         <Newspaper className="mr-2 h-4 w-4" /> Blog
                       </Button>
+                      <Button
+                        variant={formData.type === 'testimonial' ? 'default' : 'outline'}
+                        className="flex-1"
+                        onClick={() => setFormData({ ...formData, type: 'testimonial' })}
+                      >
+                        <MessageSquare className="mr-2 h-4 w-4" /> Review
+                      </Button>
                     </div>
                   </div>
 
                   <div className="grid gap-2">
                     <Label htmlFor="title" className="flex items-center gap-2">
-                      <Type className="h-4 w-4 text-accent" />
-                      {formData.type === 'product' ? 'Product Name' : 'Blog Title'} *
+                      {formData.type === 'testimonial' ? <User className="h-4 w-4 text-accent" /> : <Type className="h-4 w-4 text-accent" />}
+                      {formData.type === 'product' ? 'Product Name' : formData.type === 'testimonial' ? 'Client Name' : 'Blog Title'} *
                     </Label>
-                    <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder="Enter title..." />
+                    <Input id="title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} placeholder={formData.type === 'testimonial' ? "Client Name..." : "Enter title..."} />
                   </div>
+
+                  {formData.type === 'testimonial' && (
+                    <div className="grid gap-2">
+                      <Label htmlFor="role" className="flex items-center gap-2">
+                        <Briefcase className="h-4 w-4 text-accent" /> Role / Company
+                      </Label>
+                      <Input id="role" value={formData.role} onChange={(e) => setFormData({ ...formData, role: e.target.value })} placeholder="CEO, Global Foods..." />
+                    </div>
+                  )}
 
                   {formData.type === 'product' && (
                     <div className="grid gap-2">
@@ -219,7 +257,7 @@ export default function Admin() {
 
                   <div className="grid gap-2">
                     <Label className="flex items-center gap-2">
-                      <ImageIcon className="h-4 w-4 text-accent" /> Image Upload (JPG, PNG, WEBP)
+                      <ImageIcon className="h-4 w-4 text-accent" /> {formData.type === 'testimonial' ? 'Client Photo' : 'Image Upload'} (JPG, PNG, WEBP)
                     </Label>
                     <div className="flex flex-col gap-4">
                       <Input type="file" accept="image/png, image/jpeg, image/jpg, image/webp" onChange={handleImageUpload} className="cursor-pointer" />
@@ -239,7 +277,7 @@ export default function Admin() {
 
                   <div className="grid gap-2">
                     <Label htmlFor="description" className="flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-accent" /> Description / Content *
+                      <FileText className="h-4 w-4 text-accent" /> {formData.type === 'testimonial' ? 'Testimonial Content' : 'Description / Content'} *
                     </Label>
                     <Textarea
                       id="description"
@@ -265,6 +303,7 @@ export default function Admin() {
           <TabsList className="mb-8 bg-secondary/50 p-1">
             <TabsTrigger value="products" className="px-8"><Package className="mr-2 h-4 w-4" /> Products</TabsTrigger>
             <TabsTrigger value="blogs" className="px-8"><Newspaper className="mr-2 h-4 w-4" /> Blogs</TabsTrigger>
+            <TabsTrigger value="testimonials" className="px-8"><MessageSquare className="mr-2 h-4 w-4" /> Testimonials</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products">
@@ -337,6 +376,45 @@ export default function Admin() {
               {blogs.length === 0 && (
                 <div className="col-span-full py-20 text-center border-2 border-dashed rounded-lg bg-secondary/10">
                   <p className="text-muted-foreground italic">No blog posts yet. Click 'Create New Content' to start writing.</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="testimonials">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <AnimatePresence mode="popLayout">
+                {testimonials.map((testimonial) => (
+                  <motion.div
+                    key={testimonial.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                  >
+                    <Card className="overflow-hidden group hover:shadow-xl transition-shadow h-full flex flex-col">
+                      <div className="aspect-[21/9] bg-muted overflow-hidden flex items-center justify-center p-4">
+                        <img src={testimonial.image} className="h-20 w-20 rounded-full object-cover ring-4 ring-white" />
+                      </div>
+                      <CardHeader className="p-4 text-center">
+                        <h3 className="font-bold text-lg text-primary">{testimonial.name}</h3>
+                        <p className="text-xs text-muted-foreground uppercase">{testimonial.role}</p>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-0 flex-grow text-center">
+                        <p className="text-sm italic text-muted-foreground line-clamp-4">"{testimonial.content}"</p>
+                      </CardContent>
+                      <CardFooter className="p-4 pt-0">
+                        <Button variant="ghost" size="sm" className="text-destructive w-full hover:bg-destructive/10" onClick={() => handleDeleteTestimonial(testimonial.id)}>
+                          <Trash2 className="mr-2 h-4 w-4" /> Remove Testimonial
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              {testimonials.length === 0 && (
+                <div className="col-span-full py-20 text-center border-2 border-dashed rounded-lg bg-secondary/10">
+                  <p className="text-muted-foreground italic">No testimonials yet. Click 'Create New Content' to add one.</p>
                 </div>
               )}
             </div>

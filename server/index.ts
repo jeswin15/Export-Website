@@ -7,6 +7,16 @@ import { createServer } from "http";
 const app = express();
 const httpServer = createServer(app);
 
+// Global Error Handlers
+process.on('unhandledRejection', (reason, p) => {
+  console.error('Unhandled Rejection at:', p, 'reason:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  process.exit(1);
+});
+
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
@@ -62,7 +72,14 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  await registerRoutes(httpServer, app);
+  console.log("Starting server initialization...");
+  try {
+    await registerRoutes(httpServer, app);
+    console.log("Routes registered successfully.");
+  } catch (err) {
+    console.error("Failed to register routes:", err);
+    process.exit(1);
+  }
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
@@ -77,9 +94,6 @@ app.use((req, res, next) => {
     return res.status(status).json({ message });
   });
 
-  // importantly only setup vite in development and after
-  // setting up all the other routes so the catch-all route
-  // doesn't interfere with the other routes
   if (process.env.NODE_ENV === "production") {
     serveStatic(app);
   } else {
@@ -87,18 +101,23 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
-      host: "0.0.0.0",
-    },
-    () => {
+  const initialPort = parseInt(process.env.PORT || "5000", 10);
+
+  const startServer = (port: number) => {
+    const server = httpServer.listen({ port, host: "0.0.0.0" }, () => {
       log(`serving on port ${port}`);
-    },
-  );
+    });
+
+    server.on('error', (e: any) => {
+      if (e.code === 'EADDRINUSE') {
+        console.log(`Port ${port} in use, retrying with ${port + 1}...`);
+        server.close();
+        startServer(port + 1);
+      } else {
+        console.error('Server error:', e);
+      }
+    });
+  };
+
+  startServer(initialPort);
 })();

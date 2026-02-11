@@ -10,4 +10,12 @@ export const pool = process.env.DATABASE_URL ? new pg.Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 }) : null;
+
+if (pool) {
+    pool.on('error', (err) => {
+        console.error('Unexpected error on idle client', err);
+        process.exit(-1);
+    });
+}
+
 export const db = pool ? drizzle(pool, { schema }) : null;

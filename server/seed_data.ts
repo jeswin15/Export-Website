@@ -57,3 +57,24 @@ export const SEED_BLOGS = [
         author: "Market Analyst"
     }
 ];
+
+export const SEED_TESTIMONIALS = [
+    {
+        name: "Elena Rossi",
+        role: "Procurement Manager, Italia Foods",
+        content: "The quality of saffron we receive is consistently exceptional. Their attention to packaging ensures the aroma is perfectly preserved during transit. A truly reliable partner for premium ingredients.",
+        imageUrl: "/images/product-spice.png" // Placeholder, ideally specific avatar or generic
+    },
+    {
+        name: "David Chen",
+        role: "Director, Asian Rice Importers",
+        content: "We have been sourcing Basmati rice for three years now. The grain length and purity are unmatched in the market. Their logistical efficiency makes international trade seamless.",
+        imageUrl: "/images/product-grain.png" // Placeholder
+    },
+    {
+        name: "Sarah Williams",
+        role: "Head Chef, The Organic Kitchen",
+        content: "As a chef, I demand the best. The seasonal mangoes from Goodwill Exports were the highlight of our summer menu. Fresh, sweet, and delivered right on time.",
+        imageUrl: "/images/hero-bg.png" // Placeholder
+    }
+];
