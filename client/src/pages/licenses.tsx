@@ -203,8 +203,7 @@ export default function Licenses() {
                         className={`flex-1 bg-gradient-to-r ${selectedLicense.badgeGradient} text-white hover:shadow-xl transition-all`}
                         onClick={() => setSelectedLicense(null)}
                       >
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
+                        Close Viewer
                       </Button>
                       <Button
                         variant="outline"
