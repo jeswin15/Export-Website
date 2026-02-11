@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Trash2, LogOut, Package, Newspaper, MessageSquare, Image as ImageIcon, Type, FileText, Lock, User, Briefcase } from "lucide-react";
+import { Plus, Trash2, LogOut, Package, Newspaper, MessageSquare, Image as ImageIcon, Type, FileText, Lock, User, Briefcase, Minus as MinusIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -36,10 +36,13 @@ export default function Admin() {
   }, []);
 
   const [formData, setFormData] = useState({
-    title: "", // used for Name in testimonial
-    description: "", // used for Content in testimonial
-    category: "Regular",
+    title: "", // Name/Title
+    description: "", // Content
+    category: "Regular", // Product Category
+    blogCategory: "Industry Trends", // Blog Category
+    author: "", // Blog Author
     image: "/images/product-spice.png",
+    gallery: [] as string[], // Product Gallery
     role: "", // only for testimonial
     type: "product" as "product" | "blog" | "testimonial"
   });
@@ -55,17 +58,25 @@ export default function Admin() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, isGallery = false) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setFormData({ ...formData, image: base64String });
-        toast({ title: "Image Uploaded", description: "Image has been encoded for permanent storage." });
+        if (isGallery) {
+          setFormData(prev => ({ ...prev, gallery: [...prev.gallery, base64String] }));
+        } else {
+          setFormData({ ...formData, image: base64String });
+        }
+        toast({ title: "Image Uploaded", description: "Image has been encoded." });
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const removeGalleryImage = (index: number) => {
+    setFormData(prev => ({ ...prev, gallery: prev.gallery.filter((_, i) => i !== index) }));
   };
 
   const handleAddItem = async () => {
@@ -81,7 +92,8 @@ export default function Admin() {
         name: formData.title,
         description: formData.description,
         category: formData.category as "Regular" | "Seasonal",
-        image: formData.image
+        image: formData.image,
+        gallery: formData.gallery
       };
       success = await store.addProduct(product);
       if (success) toast({ title: "Success", description: "Product added to catalog" });
@@ -91,6 +103,8 @@ export default function Admin() {
         title: formData.title,
         content: formData.description,
         image: formData.image,
+        author: formData.author || "GOODWILL GLOBAL EXPORTS",
+        category: formData.blogCategory,
         date: new Date().toLocaleDateString()
       };
       success = await store.addBlog(blog);
@@ -112,7 +126,10 @@ export default function Admin() {
         title: "",
         description: "",
         category: "Regular",
+        blogCategory: "Industry Trends",
+        author: "",
         image: "/images/product-spice.png",
+        gallery: [],
         role: "",
         type: "product"
       });
@@ -255,12 +272,33 @@ export default function Admin() {
                     </div>
                   )}
 
+                  {formData.type === 'blog' && (
+                    <>
+                      <div className="grid gap-2">
+                        <Label htmlFor="blogCategory">Category</Label>
+                        <Select value={formData.blogCategory} onValueChange={(val: any) => setFormData({ ...formData, blogCategory: val })}>
+                          <SelectTrigger><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Industry Trends">Industry Trends</SelectItem>
+                            <SelectItem value="Logistics">Logistics</SelectItem>
+                            <SelectItem value="Company News">Company News</SelectItem>
+                            <SelectItem value="Market Analysis">Market Analysis</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="author">Author Name</Label>
+                        <Input id="author" value={formData.author} onChange={(e) => setFormData({ ...formData, author: e.target.value })} placeholder="e.g. Market Analyst" />
+                      </div>
+                    </>
+                  )}
+
                   <div className="grid gap-2">
                     <Label className="flex items-center gap-2">
                       <ImageIcon className="h-4 w-4 text-accent" /> {formData.type === 'testimonial' ? 'Client Photo' : 'Image Upload'} (JPG, PNG, WEBP)
                     </Label>
                     <div className="flex flex-col gap-4">
-                      <Input type="file" accept="image/png, image/jpeg, image/jpg, image/webp" onChange={handleImageUpload} className="cursor-pointer" />
+                      <Input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, false)} className="cursor-pointer" />
                       <div className="flex items-center gap-2">
                         <div className="h-px flex-1 bg-border" />
                         <span className="text-[10px] uppercase font-bold text-muted-foreground">or image url</span>
@@ -271,6 +309,23 @@ export default function Admin() {
                     {formData.image && (
                       <div className="mt-2 max-w-[200px] aspect-video overflow-hidden rounded-md border shadow-sm">
                         <img src={formData.image} alt="Preview" className="h-full w-full object-cover" />
+                      </div>
+                    )}
+
+                    {formData.type === 'product' && (
+                      <div className="space-y-2 mt-4">
+                        <Label>Additional Gallery Images</Label>
+                        <Input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, true)} className="cursor-pointer" />
+                        <div className="flex gap-2 flex-wrap mt-2">
+                          {formData.gallery.map((img, idx) => (
+                            <div key={idx} className="relative w-20 h-20 rounded-md overflow-hidden border">
+                              <img src={img} className="w-full h-full object-cover" />
+                              <button onClick={() => removeGalleryImage(idx)} className="absolute top-0 right-0 bg-red-500 text-white p-0.5 rounded-bl">
+                                <MinusIcon className="h-3 w-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -359,7 +414,10 @@ export default function Admin() {
                       </div>
                       <CardHeader className="p-4">
                         <h3 className="font-bold text-lg text-primary">{blog.title}</h3>
-                        <p className="text-xs text-muted-foreground">{blog.date}</p>
+                        <div className="flex justify-between items-center text-xs text-muted-foreground">
+                          <Badge variant="outline">{blog.category || "General"}</Badge>
+                          <span>{blog.date}</span>
+                        </div>
                       </CardHeader>
                       <CardContent className="p-4 pt-0 flex-grow">
                         <p className="text-sm line-clamp-3 text-muted-foreground">{blog.content}</p>

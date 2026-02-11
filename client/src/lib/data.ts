@@ -4,6 +4,7 @@ export interface Product {
   description: string;
   category: "Regular" | "Seasonal";
   image: string;
+  gallery?: string[];
 }
 
 export const initialProducts: Product[] = [
@@ -40,7 +41,7 @@ export const initialProducts: Product[] = [
     name: "Seasonal Alphonso Mangoes",
     description: "The king of mangoes, available only during peak season. Sweet, rich, and exported via air freight.",
     category: "Seasonal",
-    image: "/images/hero-bg.png" 
+    image: "/images/hero-bg.png"
   },
   {
     id: 6,

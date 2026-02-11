@@ -21,6 +21,7 @@ export const products = pgTable("products", {
   price: integer("price"), // Optional price, maybe in cents
   imageUrl: text("image_url").notNull(),
   categoryId: integer("category_id").notNull(),
+  gallery: text("gallery").array(),
 });
 
 export const blogs = pgTable("blogs", {
@@ -29,6 +30,7 @@ export const blogs = pgTable("blogs", {
   content: text("content").notNull(),
   imageUrl: text("image_url").notNull(),
   author: text("author").notNull(),
+  category: text("category").notNull().default("General"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

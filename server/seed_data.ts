@@ -48,13 +48,15 @@ export const SEED_BLOGS = [
         title: "The Future of Sustainable Spice Export",
         content: "Sustainability is at the core of our operations. We are implementing new biodegradable packaging solutions that reduce environmental impact while maintaining the freshness and quality of our premium spices. Our fair-trade partnerships ensure that farmers receive equitable compensation, fostering long-term stability in the global supply chain.",
         imageUrl: "/images/product-spice.png",
-        author: "GOODWILL GLOBAL EXPORTS"
+        author: "GOODWILL GLOBAL EXPORTS",
+        category: "Industry Trends"
     },
     {
         title: "Global Grain Market Trends 2025",
         content: "The global demand for ancient grains like quinoa, millet, and amaranth is soaring. Consumers in North America and Europe are increasingly seeking nutrient-dense, gluten-free alternatives to traditional wheat. GOODWILL GLOBAL EXPORTS is expanding its network of organic certified farms to meet this growing international demand.",
         imageUrl: "/images/product-grain.png",
-        author: "Market Analyst"
+        author: "Market Analyst",
+        category: "Market Analysis"
     }
 ];
 

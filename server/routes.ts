@@ -25,7 +25,8 @@ export async function registerRoutes(
     const result = products.map(p => ({
       ...p,
       category: categories.find(c => c.id === p.categoryId)?.name || "Uncategorized",
-      image: p.imageUrl
+      image: p.imageUrl,
+      gallery: p.gallery || []
     }));
     res.json(result);
   });
@@ -44,7 +45,8 @@ export async function registerRoutes(
       ...req.body,
       imageUrl: req.body.image,
       categoryId: category.id,
-      price: req.body.price ? parseInt(req.body.price) : null // Ensure integer or null
+      price: req.body.price ? parseInt(req.body.price) : null, // Ensure integer or null
+      gallery: req.body.gallery || []
     });
 
     if (!parsed.success) {
@@ -55,7 +57,8 @@ export async function registerRoutes(
     res.json({
       ...product,
       category: category.name,
-      image: product.imageUrl
+      image: product.imageUrl,
+      gallery: product.gallery || []
     });
   });
 
@@ -79,7 +82,8 @@ export async function registerRoutes(
     const parsed = insertBlogSchema.safeParse({
       ...req.body,
       imageUrl: req.body.image,
-      author: req.body.author || "GOODWILL GLOBAL EXPORTS" // Default author
+      author: req.body.author || "GOODWILL GLOBAL EXPORTS", // Default author
+      category: req.body.category || "General"
     });
 
     if (!parsed.success) {
