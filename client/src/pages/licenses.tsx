@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, Award, ShieldCheck, Eye, X, Download, CheckCircle } from "lucide-react";
+import { FileText, Award, ShieldCheck, Eye, X, CheckCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
