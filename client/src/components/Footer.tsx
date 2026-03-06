@@ -44,11 +44,11 @@ export default function Footer() {
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li className="flex items-center gap-2">
                 <MapPin className="h-4 w-4" />
-                <span>123 Trade Center, Business District</span>
+                <span>51/7-5, Mani Complex,Sangagiri Road, Namakkal, Tamil Nadu - 637209</span>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4" />
-                <span>+1 (555) 123-4567</span>
+                <span>+91 74491 59999</span>
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
