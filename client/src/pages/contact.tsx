@@ -127,7 +127,7 @@ export default function Contact() {
                 {
                   icon: Phone,
                   title: "Direct Hotline",
-                  content: "+91 744 915 9999",
+                  content: "+91 74491 59999",
                   gradient: "from-emerald-500/20 to-teal-500/20",
                   iconColor: "text-emerald-600",
                   borderColor: "border-emerald-200"
