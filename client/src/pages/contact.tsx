@@ -76,7 +76,7 @@ export default function Contact() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="font-serif text-4xl font-bold tracking-tight text-white md:text-6xl mb-4">
-              Contact GOODWILL GLOBAL EXPORTS
+              GOODWILL GLOBAL EXPORTS
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-white/90">
               Connect with our global trade headquarters. We're here to help.
@@ -119,7 +119,7 @@ export default function Contact() {
                 {
                   icon: MapPin,
                   title: "Global Headquarters",
-                  content: "123 Trade Center, Business District\nNew York, NY 10001",
+                  content: "51/7-5, Mani Complex,Sangagiri Road, Namakkal, Tamil Nadu - 637209",
                   gradient: "from-blue-500/20 to-cyan-500/20",
                   iconColor: "text-blue-600",
                   borderColor: "border-blue-200"
@@ -127,7 +127,7 @@ export default function Contact() {
                 {
                   icon: Phone,
                   title: "Direct Hotline",
-                  content: "+1 (555) 123-4567",
+                  content: "+91 744 915 9999",
                   gradient: "from-emerald-500/20 to-teal-500/20",
                   iconColor: "text-emerald-600",
                   borderColor: "border-emerald-200"
@@ -143,7 +143,7 @@ export default function Contact() {
                 {
                   icon: Clock,
                   title: "Business Hours",
-                  content: "Mon - Fri: 9:00 AM - 6:00 PM EST\nSat: 10:00 AM - 2:00 PM EST",
+                  content: "Mon - Fri: 9:00 AM - 6:00 PM IST\nSat: 10:00 AM - 2:00 PM IST",
                   gradient: "from-amber-500/20 to-orange-500/20",
                   iconColor: "text-amber-600",
                   borderColor: "border-amber-200"
