@@ -153,10 +153,10 @@ export default function About() {
 
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             {[
-              { label: "Countries Served", value: 25, suffix: "+", icon: Globe2, gradient: "from-blue-500 to-cyan-500" },
-              { label: "Partner Farms", value: 100, suffix: "+", icon: Users, gradient: "from-emerald-500 to-teal-500" },
-              { label: "Years Experience", value: 15, suffix: "", icon: Award, gradient: "from-amber-500 to-orange-500" },
-              { label: "Tons Exported", value: 50, suffix: "k+", icon: Sparkles, gradient: "from-purple-500 to-pink-500" },
+              { label: "Countries Served", value: 25, suffix: "+", icon: Globe2, gradient: "from-primary to-primary/90" },
+              { label: "Partner Farms", value: 100, suffix: "+", icon: Users, gradient: "from-primary to-primary/90" },
+              { label: "Years Experience", value: 15, suffix: "", icon: Award, gradient: "from-primary to-primary/90" },
+              { label: "Tons Exported", value: 50, suffix: "k+", icon: Sparkles, gradient: "from-primary to-primary/90" },
             ].map((stat, idx) => (
               <motion.div
                 key={idx}
