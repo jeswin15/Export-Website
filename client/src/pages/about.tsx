@@ -243,20 +243,28 @@ export default function About() {
         </div>
       </div>
 
-      {/* Founders Section - Dark Theme */}
-      <div className="bg-[#080808] py-24 md:py-32 relative overflow-hidden">
-        {/* Subtle Background Glows */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[120px]" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
+      {/* Founders Section - Global Template Style */}
+      <section className="bg-primary py-24 md:py-32 relative overflow-hidden">
+        {/* Global Pattern Overlay */}
+        <div className="absolute inset-0 opacity-[0.03]">
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+            backgroundSize: '48px 48px'
+          }} />
+        </div>
 
-        <div className="container px-4 mx-auto relative z-10 md:px-6">
+        {/* Subtle Background Glows */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent/10 rounded-full blur-[120px] opacity-20" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-[120px] opacity-20" />
+
+        <div className="container px-4 mx-auto relative z-10 md:px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-20"
+            className="mb-20"
           >
-            <h2 className="text-white/30 uppercase tracking-[0.4em] text-xs font-bold mb-4">
+            <h2 className="text-secondary uppercase tracking-[0.4em] text-xs font-bold mb-4 opacity-80">
               The Founders
             </h2>
           </motion.div>
